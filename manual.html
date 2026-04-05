@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual — Polla Mundialista 2026 🇵🇦</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <div class="header-brand">
+        <div class="trophy-wrap">🏆</div>
+        <div class="header-text">
+          <h1>Polla Mundialista 2026 🇵🇦</h1>
+          <div class="tagline">📖 Instrucciones y reglas del juego</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">⚽ Mi Polla</a>
+        <a href="admin.html">🔐 Admin</a>
+        <a href="manual.html" class="active">📖 Manual</a>
+      </nav>
+    </div>
+    <div class="header-flag-strip"></div>
+  </header>
+
+  <main class="manual-main">
+
+    <!-- ─── Instrucciones ─────────────────────────────────── -->
+    <section class="manual-section">
+      <h2>📋 ¿Cómo llenar tu polla?</h2>
+      <div class="manual-body">
+        <ol>
+          <li><strong>Tu nombre:</strong> escribe tu nombre completo para identificar tu predicción.</li>
+          <li><strong>Fase de grupos:</strong> para cada uno de los 12 grupos, elige qué equipo queda en 1° y 2° lugar.</li>
+          <li><strong>Mejores terceros:</strong> de los 12 equipos que quedarán en 3er lugar (uno por grupo), selecciona exactamente los 8 que crees que avanzarán a la Ronda de 32.</li>
+          <li><strong>Eliminación directa:</strong> una vez completes los grupos, los equipos aparecen automáticamente en los partidos. Elige el ganador de cada partido desde la Ronda de 32 hasta la Final. El bracket se va completando solo según tus picks.</li>
+          <li><strong>Especial Panamá 🇵🇦:</strong> predice el marcador exacto (goles) de cada uno de los 3 partidos de Panamá en la fase de grupos.</li>
+          <li><strong>Goleador, Campeón y Subcampeón:</strong> completa las predicciones especiales con más puntos en juego.</li>
+          <li><strong>Exportar:</strong> cuando el progreso llegue al 100%, el botón azul se activa. Haz clic para descargar tu archivo <code>.json</code> con tu predicción.</li>
+          <li><strong>Enviar:</strong> envíale tu archivo <code>.json</code> al organizador antes de que arranque el torneo.</li>
+        </ol>
+        <p style="margin-top:16px;background:#fff3cd;border-left:4px solid #ffc107;padding:10px 14px;border-radius:4px">
+          ⚠️ <strong>Fecha límite:</strong> debes exportar y enviar tu predicción antes del
+          <strong>11 de junio de 2026</strong> (inicio del torneo). Después no se aceptan cambios.
+        </p>
+      </div>
+    </section>
+
+    <!-- ─── Sistema de puntos ─────────────────────────────── -->
+    <section class="manual-section">
+      <h2>🏅 Sistema de Puntos</h2>
+      <div class="manual-body">
+        <p>Los puntos se calculan automáticamente al terminar cada fase. Mientras el torneo no haya terminado, todos aparecen con 0 puntos.</p>
+
+        <table class="pts-table">
+          <thead>
+            <tr><th>Predicción</th><th>Condición</th><th>Puntos</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Equipo pasa de grupos</td><td>Avanza (posición incorrecta)</td><td class="pts-value">2 pts</td></tr>
+            <tr><td>Equipo pasa de grupos</td><td>Posición exacta (1° o 2°)</td><td class="pts-value">2 + 3 = 5 pts</td></tr>
+            <tr><td>Mejor 3° acertado</td><td>El equipo fue uno de los 8 mejores terceros</td><td class="pts-value">4 pts</td></tr>
+            <tr><td>Ronda de 32</td><td>Ganador correcto</td><td class="pts-value">2 pts</td></tr>
+            <tr><td>Octavos de Final</td><td>Ganador correcto</td><td class="pts-value">4 pts</td></tr>
+            <tr><td>Cuartos de Final</td><td>Ganador correcto</td><td class="pts-value">6 pts</td></tr>
+            <tr><td>Semifinal</td><td>Ganador correcto</td><td class="pts-value">8 pts</td></tr>
+            <tr><td>Tercer lugar</td><td>Ganador correcto</td><td class="pts-value">7 pts</td></tr>
+            <tr><td>Final</td><td>Ganador correcto</td><td class="pts-value">12 pts</td></tr>
+            <tr><td>🏆 Campeón</td><td>Equipo campeón exacto</td><td class="pts-value">20 pts</td></tr>
+            <tr><td>🥈 Subcampeón</td><td>Equipo subcampeón exacto</td><td class="pts-value">12 pts</td></tr>
+            <tr><td>⚽ Goleador</td><td>Nombre exacto del goleador</td><td class="pts-value">15 pts</td></tr>
+            <tr><td>🇵🇦 Panamá — resultado</td><td>Victoria / empate / derrota correcta</td><td class="pts-value">5 pts</td></tr>
+            <tr><td>🇵🇦 Panamá — marcador exacto</td><td>Goles exactos de ambos equipos</td><td class="pts-value">12 pts</td></tr>
+          </tbody>
+        </table>
+
+        <p style="margin-top:12px" class="text-muted">
+          Los puntos del goleador son por coincidencia exacta de nombre (sin importar mayúsculas/minúsculas).
+          Para Panamá, si aciertas el marcador exacto recibes 12 pts (no los 5 del resultado).
+        </p>
+      </div>
+    </section>
+
+    <!-- ─── Estructura del torneo ─────────────────────────── -->
+    <section class="manual-section">
+      <h2>🌎 Formato del Mundial 2026</h2>
+      <div class="manual-body">
+        <ul>
+          <li><strong>48 equipos</strong> en <strong>12 grupos</strong> de 4 equipos cada uno.</li>
+          <li><strong>Fase de grupos:</strong> cada equipo juega 3 partidos (todos contra todos en su grupo). Clasifican los 2 mejores de cada grupo + los 8 mejores terceros = <strong>32 equipos</strong>.</li>
+          <li><strong>Ronda de 32:</strong> 16 partidos (eliminación directa).</li>
+          <li><strong>Octavos de Final:</strong> 8 partidos.</li>
+          <li><strong>Cuartos de Final:</strong> 4 partidos.</li>
+          <li><strong>Semifinales:</strong> 2 partidos.</li>
+          <li><strong>Tercer lugar y Final:</strong> 2 partidos.</li>
+          <li>Sede: <strong>Estados Unidos, México y Canadá</strong> — inicio 11 de junio de 2026.</li>
+        </ul>
+
+        <p style="margin-top:14px"><strong>Panamá</strong> 🇵🇦 juega en el <strong>Grupo L</strong> junto con:</p>
+        <ul>
+          <li><span class="fi fi-gb-eng" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span> <strong>Inglaterra</strong></li>
+          <li><span class="fi fi-hr" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span> <strong>Croacia</strong></li>
+          <li><span class="fi fi-gh" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span> <strong>Ghana</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ─── Para el admin ─────────────────────────────────── -->
+    <section class="manual-section">
+      <h2>🔧 Guía para el Organizador</h2>
+      <div class="manual-body">
+        <ol>
+          <li>Comparte el archivo <code>index.html</code> (junto con las carpetas <code>css/</code> y <code>js/</code>) con todos los participantes.</li>
+          <li>Cada participante abre <code>index.html</code> en su navegador, llena su predicción y exporta su archivo <code>.json</code>.</li>
+          <li>Recolecta todos los archivos <code>.json</code> antes del 11 de junio.</li>
+          <li>Abre <code>admin.html</code> e ingresa la contraseña (por defecto: <code>panama2026</code>).</li>
+          <li>Carga todos los archivos JSON de una vez. La tabla se actualiza automáticamente.</li>
+          <li>Cuando termine el torneo, edita <code>js/data.js</code> y llena el objeto <code>RESULTS</code> con los resultados reales. Al guardar el archivo, la puntuación se calcula automáticamente.</li>
+        </ol>
+
+        <p style="margin-top:14px;background:#e8f4ff;border-left:4px solid var(--azul,#003893);padding:10px 14px;border-radius:4px">
+          💡 <strong>Cambiar la contraseña:</strong> abre <code>js/data.js</code> y cambia el valor de
+          <code>adminPassword</code> por la contraseña que quieras.
+        </p>
+
+        <p style="margin-top:10px;background:#e8f4ff;border-left:4px solid var(--azul,#003893);padding:10px 14px;border-radius:4px">
+          💡 <strong>Ingresar resultados:</strong> al final del torneo, descomenta y llena el objeto
+          <code>RESULTS</code> al final de <code>js/data.js</code>. Siguiendo la misma estructura que
+          las predicciones.
+        </p>
+      </div>
+    </section>
+
+    <!-- ─── Preguntas frecuentes ──────────────────────────── -->
+    <section class="manual-section">
+      <h2>❓ Preguntas Frecuentes</h2>
+      <div class="manual-body">
+        <p><strong>¿Puedo editar mi predicción después de exportar?</strong><br>
+        No. Una vez que exportas, el formulario se bloquea. Si necesitas corregir algo, puedes hacer clic en "Reiniciar" (borra todo y comienzas de nuevo), pero debes volver a enviar el nuevo JSON al organizador.</p>
+
+        <p><strong>¿Qué pasa si cierro la pestaña antes de exportar?</strong><br>
+        Tu progreso se guarda automáticamente en el navegador. Al reabrir <code>index.html</code> en el mismo navegador, todo estará exactamente donde lo dejaste.</p>
+
+        <p><strong>¿Funciona en celular?</strong><br>
+        Sí, el diseño es responsive. Se recomienda usar Chrome o Safari actualizados.</p>
+
+        <p><strong>¿Necesita internet?</strong><br>
+        No. Funciona completamente sin conexión. Solo necesitas los archivos del proyecto.</p>
+
+        <p><strong>¿En qué se basan los picks de eliminación directa?</strong><br>
+        El bracket de la Ronda de 32 está predeterminado por la FIFA basado en los grupos. Al seleccionar 1° y 2° en cada grupo, los partidos de Ronda de 32 se llenan automáticamente. Las siguientes rondas dependen de tus picks anteriores.</p>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>

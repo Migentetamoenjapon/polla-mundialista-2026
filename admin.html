@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Polla Mundialista 2026 🇵🇦</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-top">
+      <div class="header-brand">
+        <div class="trophy-wrap">🏆</div>
+        <div class="header-text">
+          <h1>Polla Mundialista 2026 🇵🇦</h1>
+          <div class="tagline">🔐 Panel de administración y ranking</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">⚽ Mi Polla</a>
+        <a href="admin.html" class="active">🔐 Admin</a>
+        <a href="manual.html">📖 Manual</a>
+      </nav>
+    </div>
+    <div class="header-flag-strip"></div>
+  </header>
+
+  <main>
+
+    <!-- LOGIN -->
+    <div id="admin-login" class="admin-login">
+      <div class="admin-login-header">
+        <div style="font-size:2.5rem;margin-bottom:8px">🔐</div>
+        <h1>Acceso Admin</h1>
+        <p style="font-size:0.85rem;opacity:0.8;margin-top:6px">Solo para el organizador</p>
+      </div>
+      <div class="admin-login-body">
+        <form id="login-form">
+          <label for="pwd-input">Contraseña</label>
+          <input
+            type="password"
+            id="pwd-input"
+            class="admin-pwd-input"
+            placeholder="Ingresa la contraseña..."
+            autofocus
+          >
+          <p id="login-error" class="error-msg">Contraseña incorrecta. Intenta de nuevo.</p>
+          <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+        <p class="text-muted" style="text-align:center;margin-top:14px;font-size:0.8rem">
+          La contraseña se configura en <code>js/data.js</code>
+        </p>
+      </div>
+    </div>
+
+    <!-- PANEL ADMIN (oculto hasta login) -->
+    <div id="admin-panel">
+
+      <!-- Upload -->
+      <section class="form-section">
+        <div class="section-header">
+          <span class="section-icon">📁</span>
+          <div>
+            <h2>Cargar Predicciones</h2>
+            <div class="section-sub">Sube los archivos JSON de todos los participantes</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="upload-zone" class="upload-zone">
+            <div class="upload-icon">📂</div>
+            <p><strong>Haz clic o arrastra archivos JSON aquí</strong></p>
+            <p>Puedes cargar varios archivos a la vez</p>
+          </div>
+          <input type="file" id="file-input" multiple accept=".json">
+
+          <div class="stats-bar">
+            <div class="stat-chip">
+              Participantes cargados: <strong id="stat-count">0</strong>
+            </div>
+            <div class="stat-chip warning" id="no-results-banner" style="display:flex;align-items:center;gap:6px">
+              ⚠️ <span>Los resultados reales aún no están ingresados — puntuación en ceros</span>
+            </div>
+          </div>
+
+          <div style="text-align:right;margin-bottom:12px">
+            <button id="btn-clear" class="btn-primary" style="width:auto;padding:8px 20px;background:var(--rojo)">
+              Limpiar todo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabla ranking -->
+      <section class="form-section">
+        <div class="section-header">
+          <span class="section-icon">🏆</span>
+          <div>
+            <h2>Ranking</h2>
+            <div class="section-sub">Haz clic en una fila para ver el detalle completo</div>
+          </div>
+        </div>
+        <div class="section-body" style="padding:0">
+          <div class="ranking-table-wrap">
+            <div id="table-container">
+              <div class="empty-state">
+                <div class="empty-icon">📂</div>
+                <p>Ningún archivo cargado todavía.</p>
+                <p>Sube los JSON de tus compañeros para ver el ranking.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /#admin-panel -->
+
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

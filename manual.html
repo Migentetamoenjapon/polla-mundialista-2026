@@ -3,156 +3,417 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manual — Polla Mundialista 2026 🇵🇦</title>
+  <title>Manual — Polla Mundialista 2026</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    .manual-main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .manual-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .manual-section-header {
+      padding: 16px 20px;
+      border-bottom: 0.5px solid var(--sep);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .manual-section-icon { font-size: 1.2rem; }
+    .manual-section-header h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--label);
+    }
+    .manual-section-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: var(--label-2);
+      line-height: 1.6;
+    }
+    .manual-section-body ol,
+    .manual-section-body ul {
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .manual-section-body li strong { color: var(--label); }
+    .manual-section-body code {
+      background: var(--fill);
+      border-radius: 5px;
+      padding: 1px 5px;
+      font-size: 0.82rem;
+      color: var(--label-2);
+    }
+
+    /* Scoring table */
+    .pts-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+    .pts-table th {
+      text-align: left;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--label-4);
+      padding: 8px 10px;
+      border-bottom: 0.5px solid var(--sep);
+    }
+    .pts-table td {
+      padding: 9px 10px;
+      border-bottom: 0.5px solid var(--sep-2);
+      color: var(--label-2);
+      vertical-align: top;
+    }
+    .pts-table tr:last-child td { border-bottom: none; }
+    .pts-value {
+      font-weight: 700;
+      color: var(--blue);
+      white-space: nowrap;
+    }
+    .pts-row-highlight td { background: rgba(0,122,255,0.04); }
+    .pts-row-gold td { background: rgba(255,204,0,0.07); }
+
+    /* Category badge */
+    .tbl-cat {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--label-4);
+      padding: 10px 10px 4px;
+      border-bottom: 0.5px solid var(--sep-2);
+      background: var(--fill-3);
+    }
+    .tbl-cat td { color: var(--label-4); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Info box */
+    .info-box {
+      background: rgba(0,122,255,0.06);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 10px 10px 0;
+      padding: 11px 14px;
+      font-size: 0.84rem;
+      color: var(--label-2);
+    }
+    .info-box.warn {
+      background: rgba(255,149,0,0.07);
+      border-left-color: var(--orange);
+    }
+    .info-box strong { color: var(--label); }
+
+    /* Total pill */
+    .total-pts-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--fill-2);
+      border-radius: var(--radius-xs);
+      padding: 10px 14px;
+      gap: 12px;
+    }
+    .total-pts-row span { font-size: 0.84rem; color: var(--label-3); }
+    .total-pts-row strong { font-size: 1.1rem; font-weight: 800; color: var(--label); letter-spacing: -0.03em; }
+
+    /* Flag in text */
+    .fi-inline {
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.18);
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+  </style>
 </head>
 <body>
 
   <header>
-    <div class="header-top">
+    <div class="header-inner">
       <div class="header-brand">
-        <div class="trophy-wrap">🏆</div>
+        <span class="header-trophy"><i class="fa-solid fa-trophy"></i></span>
         <div class="header-text">
-          <h1>Polla Mundialista 2026 🇵🇦</h1>
-          <div class="tagline">📖 Instrucciones y reglas del juego</div>
+          <h1>Polla Mundialista 2026</h1>
+          <div class="tagline">
+            <span class="fi fi-pa"></span>
+            <span class="fi fi-us"></span>
+            <span class="fi fi-ca"></span>
+            <span class="fi fi-mx"></span>
+            <span class="tagline-sep">·</span>
+            <span>Manual de Instrucciones</span>
+          </div>
         </div>
       </div>
       <nav>
-        <a href="index.html">⚽ Mi Polla</a>
-        <a href="admin.html">🔐 Admin</a>
-        <a href="manual.html" class="active">📖 Manual</a>
+        <a href="index.html">Mi Polla</a>
+        <a href="admin.html">Admin</a>
+        <a href="historico.html">Historial</a>
+        <a href="manual.html" class="active">Manual</a>
       </nav>
     </div>
-    <div class="header-flag-strip"></div>
   </header>
 
   <main class="manual-main">
 
-    <!-- ─── Instrucciones ─────────────────────────────────── -->
+    <!-- ─── Cómo jugar ──────────────────────────────────────── -->
     <section class="manual-section">
-      <h2>📋 ¿Cómo llenar tu polla?</h2>
-      <div class="manual-body">
+      <div class="manual-section-header">
+        <span class="manual-section-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+        <h2>¿Cómo llenar tu polla?</h2>
+      </div>
+      <div class="manual-section-body">
         <ol>
-          <li><strong>Tu nombre:</strong> escribe tu nombre completo para identificar tu predicción.</li>
-          <li><strong>Fase de grupos:</strong> para cada uno de los 12 grupos, elige qué equipo queda en 1° y 2° lugar.</li>
-          <li><strong>Mejores terceros:</strong> de los 12 equipos que quedarán en 3er lugar (uno por grupo), selecciona exactamente los 8 que crees que avanzarán a la Ronda de 32.</li>
-          <li><strong>Eliminación directa:</strong> una vez completes los grupos, los equipos aparecen automáticamente en los partidos. Elige el ganador de cada partido desde la Ronda de 32 hasta la Final. El bracket se va completando solo según tus picks.</li>
-          <li><strong>Especial Panamá 🇵🇦:</strong> predice el marcador exacto (goles) de cada uno de los 3 partidos de Panamá en la fase de grupos.</li>
-          <li><strong>Goleador, Campeón y Subcampeón:</strong> completa las predicciones especiales con más puntos en juego.</li>
-          <li><strong>Exportar:</strong> cuando el progreso llegue al 100%, el botón azul se activa. Haz clic para descargar tu archivo <code>.json</code> con tu predicción.</li>
-          <li><strong>Enviar:</strong> envíale tu archivo <code>.json</code> al organizador antes de que arranque el torneo.</li>
+          <li><strong>Tu nombre:</strong> escríbelo para que el organizador pueda identificar tu predicción.</li>
+          <li><strong>Fase de grupos:</strong> en cada uno de los 12 grupos, elige qué equipo queda en 1° y qué equipo queda en 2°. Son 24 picks en total.</li>
+          <li><strong>Mejores terceros:</strong> de los 12 equipos que quedarán terceros en sus grupos, elige exactamente los 8 que crees que avanzarán a la Ronda de 32.</li>
+          <li><strong>Especial Panamá 🇵🇦:</strong> predice el marcador de cada uno de los 3 partidos de Panamá en grupos. Ganas puntos por acertar el resultado (W/E/D) y puntos extra si aciertas el marcador exacto.</li>
+          <li><strong>Partidos Destacados:</strong> misma dinámica que Panamá — resultado correcto + bonus por marcador exacto.</li>
+          <li><strong>Predicciones Especiales:</strong> campeón, subcampeón, balón de oro, bota de oro, primer goleador de Panamá, goles de Yamal y Vinicius, total de goles en la final, penales en la final y quién mete más penales entre CR7 y Messi.</li>
+          <li><strong>Exportar:</strong> cuando el progreso llegue al 100%, el botón azul se activa. Haz clic para descargar tu archivo <code>.json</code>.</li>
+          <li><strong>Enviar:</strong> mándale el archivo <code>.json</code> al organizador antes del inicio del torneo.</li>
         </ol>
-        <p style="margin-top:16px;background:#fff3cd;border-left:4px solid #ffc107;padding:10px 14px;border-radius:4px">
-          ⚠️ <strong>Fecha límite:</strong> debes exportar y enviar tu predicción antes del
-          <strong>11 de junio de 2026</strong> (inicio del torneo). Después no se aceptan cambios.
-        </p>
+        <div class="info-box warn">
+          <strong>Fecha límite:</strong> debes exportar y enviar tu predicción antes del
+          <strong>11 de junio de 2026</strong>. Después no se aceptan cambios.
+        </div>
       </div>
     </section>
 
     <!-- ─── Sistema de puntos ─────────────────────────────── -->
     <section class="manual-section">
-      <h2>🏅 Sistema de Puntos</h2>
-      <div class="manual-body">
-        <p>Los puntos se calculan automáticamente al terminar cada fase. Mientras el torneo no haya terminado, todos aparecen con 0 puntos.</p>
+      <div class="manual-section-header">
+        <span class="manual-section-icon"><i class="fa-solid fa-medal"></i></span>
+        <h2>Sistema de Puntos</h2>
+      </div>
+      <div class="manual-section-body">
+        <p>Los puntos se calculan automáticamente al introducir los resultados reales. Mientras el torneo no haya terminado, todos aparecen con 0 puntos.</p>
 
         <table class="pts-table">
           <thead>
-            <tr><th>Predicción</th><th>Condición</th><th>Puntos</th></tr>
+            <tr>
+              <th>Sección</th>
+              <th>Predicción</th>
+              <th>Puntos</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>Equipo pasa de grupos</td><td>Avanza (posición incorrecta)</td><td class="pts-value">2 pts</td></tr>
-            <tr><td>Equipo pasa de grupos</td><td>Posición exacta (1° o 2°)</td><td class="pts-value">2 + 3 = 5 pts</td></tr>
-            <tr><td>Mejor 3° acertado</td><td>El equipo fue uno de los 8 mejores terceros</td><td class="pts-value">4 pts</td></tr>
-            <tr><td>Ronda de 32</td><td>Ganador correcto</td><td class="pts-value">2 pts</td></tr>
-            <tr><td>Octavos de Final</td><td>Ganador correcto</td><td class="pts-value">4 pts</td></tr>
-            <tr><td>Cuartos de Final</td><td>Ganador correcto</td><td class="pts-value">6 pts</td></tr>
-            <tr><td>Semifinal</td><td>Ganador correcto</td><td class="pts-value">8 pts</td></tr>
-            <tr><td>Tercer lugar</td><td>Ganador correcto</td><td class="pts-value">7 pts</td></tr>
-            <tr><td>Final</td><td>Ganador correcto</td><td class="pts-value">12 pts</td></tr>
-            <tr><td>🏆 Campeón</td><td>Equipo campeón exacto</td><td class="pts-value">20 pts</td></tr>
-            <tr><td>🥈 Subcampeón</td><td>Equipo subcampeón exacto</td><td class="pts-value">12 pts</td></tr>
-            <tr><td>⚽ Goleador</td><td>Nombre exacto del goleador</td><td class="pts-value">15 pts</td></tr>
-            <tr><td>🇵🇦 Panamá — resultado</td><td>Victoria / empate / derrota correcta</td><td class="pts-value">5 pts</td></tr>
-            <tr><td>🇵🇦 Panamá — marcador exacto</td><td>Goles exactos de ambos equipos</td><td class="pts-value">12 pts</td></tr>
+            <tr class="tbl-cat"><td colspan="3">🏟️ Fase de Grupos</td></tr>
+            <tr>
+              <td>Grupos</td>
+              <td>Equipo elegido como 1° o 2° y queda exactamente en esa posición</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>24 picks × 3 pts máx. cada uno</td>
+              <td class="pts-value">hasta 72 pts</td>
+            </tr>
+
+            <tr class="tbl-cat"><td colspan="3">🥉 Mejores Terceros</td></tr>
+            <tr>
+              <td>Terceros</td>
+              <td>Cada equipo en 3° que sí clasificó entre los 8 mejores</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>8 picks × 3 pts = hasta</td>
+              <td class="pts-value">24 pts</td>
+            </tr>
+
+            <tr class="tbl-cat"><td colspan="3">🇵🇦 Especial Panamá</td></tr>
+            <tr>
+              <td>Panamá</td>
+              <td>Resultado correcto (victoria / empate / derrota)</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Bonus: marcador exacto (goles de ambos equipos)</td>
+              <td class="pts-value">+3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>3 partidos × hasta 6 pts = hasta</td>
+              <td class="pts-value">18 pts</td>
+            </tr>
+
+            <tr class="tbl-cat"><td colspan="3">🌟 Partidos Destacados</td></tr>
+            <tr>
+              <td>Destacados</td>
+              <td>Resultado correcto</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Bonus: marcador exacto</td>
+              <td class="pts-value">+3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>7 partidos × hasta 6 pts = hasta</td>
+              <td class="pts-value">42 pts</td>
+            </tr>
+
+            <tr class="tbl-cat"><td colspan="3">⭐ Predicciones Especiales</td></tr>
+            <tr class="pts-row-gold">
+              <td>Especiales</td>
+              <td>🏆 Campeón del torneo</td>
+              <td class="pts-value">10 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>🥈 Subcampeón</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>👟 Bota de Oro (máximo goleador)</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>🌟 Balón de Oro (mejor jugador)</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>🇵🇦 Primer goleador de Panamá</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Goles de Lamine Yamal en el torneo</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Goles de Vinicius Jr. en el torneo</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Total de goles en la Final</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>¿Habrá penales en la Final? (Sí / No)</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>¿Quién mete más penales: CR7 o Messi?</td>
+              <td class="pts-value">3 pts</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Subtotal especiales</td>
+              <td class="pts-value">37 pts</td>
+            </tr>
           </tbody>
         </table>
 
-        <p style="margin-top:12px" class="text-muted">
-          Los puntos del goleador son por coincidencia exacta de nombre (sin importar mayúsculas/minúsculas).
-          Para Panamá, si aciertas el marcador exacto recibes 12 pts (no los 5 del resultado).
-        </p>
+        <div class="total-pts-row">
+          <span>Total posible acumulado</span>
+          <strong>193 pts</strong>
+        </div>
+
+        <div class="info-box">
+          En <strong>Fase de Grupos</strong>, los 3 pts se dan solo si el equipo queda
+          <em>exactamente</em> en la posición que elegiste (1° o 2°). No hay puntos parciales por
+          "acertar que pasó".
+        </div>
       </div>
     </section>
 
-    <!-- ─── Estructura del torneo ─────────────────────────── -->
+    <!-- ─── Formato del torneo ────────────────────────────── -->
     <section class="manual-section">
-      <h2>🌎 Formato del Mundial 2026</h2>
-      <div class="manual-body">
+      <div class="manual-section-header">
+        <span class="manual-section-icon"><i class="fa-solid fa-earth-americas"></i></span>
+        <h2>Formato del Mundial 2026</h2>
+      </div>
+      <div class="manual-section-body">
         <ul>
-          <li><strong>48 equipos</strong> en <strong>12 grupos</strong> de 4 equipos cada uno.</li>
-          <li><strong>Fase de grupos:</strong> cada equipo juega 3 partidos (todos contra todos en su grupo). Clasifican los 2 mejores de cada grupo + los 8 mejores terceros = <strong>32 equipos</strong>.</li>
-          <li><strong>Ronda de 32:</strong> 16 partidos (eliminación directa).</li>
-          <li><strong>Octavos de Final:</strong> 8 partidos.</li>
-          <li><strong>Cuartos de Final:</strong> 4 partidos.</li>
-          <li><strong>Semifinales:</strong> 2 partidos.</li>
-          <li><strong>Tercer lugar y Final:</strong> 2 partidos.</li>
-          <li>Sede: <strong>Estados Unidos, México y Canadá</strong> — inicio 11 de junio de 2026.</li>
+          <li><strong>48 equipos</strong> en <strong>12 grupos</strong> de 4 equipos.</li>
+          <li>Clasifican los 2 mejores de cada grupo + los 8 mejores terceros = <strong>32 equipos</strong>.</li>
+          <li>Eliminación directa desde la Ronda de 32 hasta la Final.</li>
+          <li>Sede: <strong>Estados Unidos, México y Canadá</strong>.</li>
+          <li>Inicio: <strong>11 de junio de 2026</strong>.</li>
         </ul>
 
-        <p style="margin-top:14px"><strong>Panamá</strong> 🇵🇦 juega en el <strong>Grupo L</strong> junto con:</p>
+        <p><strong>Panamá</strong> <span class="fi fi-pa fi-inline"></span> juega en el <strong>Grupo L</strong> junto con:</p>
         <ul>
-          <li><span class="fi fi-gb-eng" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span> <strong>Inglaterra</strong></li>
-          <li><span class="fi fi-hr" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span> <strong>Croacia</strong></li>
-          <li><span class="fi fi-gh" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span> <strong>Ghana</strong></li>
+          <li><span class="fi fi-gb-eng fi-inline"></span> <strong>Inglaterra</strong></li>
+          <li><span class="fi fi-hr fi-inline"></span> <strong>Croacia</strong></li>
+          <li><span class="fi fi-gh fi-inline"></span> <strong>Ghana</strong></li>
         </ul>
       </div>
     </section>
 
-    <!-- ─── Para el admin ─────────────────────────────────── -->
+    <!-- ─── Para el organizador ──────────────────────────── -->
     <section class="manual-section">
-      <h2>🔧 Guía para el Organizador</h2>
-      <div class="manual-body">
+      <div class="manual-section-header">
+        <span class="manual-section-icon"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+        <h2>Guía para el Organizador</h2>
+      </div>
+      <div class="manual-section-body">
         <ol>
-          <li>Comparte el archivo <code>index.html</code> (junto con las carpetas <code>css/</code> y <code>js/</code>) con todos los participantes.</li>
-          <li>Cada participante abre <code>index.html</code> en su navegador, llena su predicción y exporta su archivo <code>.json</code>.</li>
-          <li>Recolecta todos los archivos <code>.json</code> antes del 11 de junio.</li>
+          <li>Comparte los archivos del proyecto (<code>index.html</code>, <code>css/</code>, <code>js/</code>) con todos los participantes.</li>
+          <li>Cada participante abre <code>index.html</code> en su navegador, completa su predicción y exporta su <code>.json</code>.</li>
+          <li>Recolecta todos los archivos antes del 11 de junio.</li>
           <li>Abre <code>admin.html</code> e ingresa la contraseña (por defecto: <code>panama2026</code>).</li>
-          <li>Carga todos los archivos JSON de una vez. La tabla se actualiza automáticamente.</li>
-          <li>Cuando termine el torneo, edita <code>js/data.js</code> y llena el objeto <code>RESULTS</code> con los resultados reales. Al guardar el archivo, la puntuación se calcula automáticamente.</li>
+          <li>Carga todos los archivos JSON. La tabla de rankings se genera automáticamente.</li>
+          <li>Al terminar el torneo, edita <code>js/data.js</code> y llena el objeto <code>RESULTS</code> con los resultados reales. Los puntos se calcularán solos.</li>
         </ol>
-
-        <p style="margin-top:14px;background:#e8f4ff;border-left:4px solid var(--azul,#003893);padding:10px 14px;border-radius:4px">
-          💡 <strong>Cambiar la contraseña:</strong> abre <code>js/data.js</code> y cambia el valor de
-          <code>adminPassword</code> por la contraseña que quieras.
-        </p>
-
-        <p style="margin-top:10px;background:#e8f4ff;border-left:4px solid var(--azul,#003893);padding:10px 14px;border-radius:4px">
-          💡 <strong>Ingresar resultados:</strong> al final del torneo, descomenta y llena el objeto
-          <code>RESULTS</code> al final de <code>js/data.js</code>. Siguiendo la misma estructura que
-          las predicciones.
-        </p>
+        <div class="info-box">
+          <strong>Cambiar contraseña:</strong> abre <code>js/data.js</code> y edita el valor de
+          <code>adminPassword</code>.
+        </div>
+        <div class="info-box">
+          <strong>Ingresar resultados:</strong> al final del torneo, descomenta y llena el objeto
+          <code>RESULTS</code> en <code>js/data.js</code>. El formato está en los comentarios del archivo.
+        </div>
       </div>
     </section>
 
-    <!-- ─── Preguntas frecuentes ──────────────────────────── -->
+    <!-- ─── FAQ ──────────────────────────────────────────── -->
     <section class="manual-section">
-      <h2>❓ Preguntas Frecuentes</h2>
-      <div class="manual-body">
+      <div class="manual-section-header">
+        <span class="manual-section-icon"><i class="fa-solid fa-circle-question"></i></span>
+        <h2>Preguntas Frecuentes</h2>
+      </div>
+      <div class="manual-section-body">
         <p><strong>¿Puedo editar mi predicción después de exportar?</strong><br>
-        No. Una vez que exportas, el formulario se bloquea. Si necesitas corregir algo, puedes hacer clic en "Reiniciar" (borra todo y comienzas de nuevo), pero debes volver a enviar el nuevo JSON al organizador.</p>
+        No. Una vez que exportas, el formulario se bloquea. Puedes hacer clic en "Reiniciar" para empezar de cero, pero debes volver a enviar el nuevo JSON al organizador.</p>
 
         <p><strong>¿Qué pasa si cierro la pestaña antes de exportar?</strong><br>
-        Tu progreso se guarda automáticamente en el navegador. Al reabrir <code>index.html</code> en el mismo navegador, todo estará exactamente donde lo dejaste.</p>
+        Tu progreso se guarda automáticamente en el navegador. Al reabrir <code>index.html</code> en el mismo navegador y dispositivo, todo estará donde lo dejaste.</p>
 
         <p><strong>¿Funciona en celular?</strong><br>
-        Sí, el diseño es responsive. Se recomienda usar Chrome o Safari actualizados.</p>
+        Sí. Se recomienda Chrome o Safari actualizados.</p>
 
         <p><strong>¿Necesita internet?</strong><br>
         No. Funciona completamente sin conexión. Solo necesitas los archivos del proyecto.</p>
 
-        <p><strong>¿En qué se basan los picks de eliminación directa?</strong><br>
-        El bracket de la Ronda de 32 está predeterminado por la FIFA basado en los grupos. Al seleccionar 1° y 2° en cada grupo, los partidos de Ronda de 32 se llenan automáticamente. Las siguientes rondas dependen de tus picks anteriores.</p>
+        <p><strong>¿Por qué los puntos aparecen en cero?</strong><br>
+        Los puntos se calculan contra los resultados reales (<code>RESULTS</code> en <code>data.js</code>). Mientras ese objeto esté vacío, la puntuación es cero para todos.</p>
       </div>
     </section>
 

@@ -74,6 +74,21 @@ const WC2026 = {
     "Panamá":            "pa",
     "Ghana":             "gh",
     "Playoff 1":         "un",
+    // Equipos de mundiales pasados (no en el 2026)
+    "Gales":              "gb-wls",
+    "Polonia":            "pl",
+    "Dinamarca":          "dk",
+    "Costa Rica":         "cr",
+    "Camerún":            "cm",
+    "Serbia":             "rs",
+    "Rusia":              "ru",
+    "Nigeria":            "ng",
+    "Islandia":           "is",
+    "Perú":               "pe",
+    "Chile":              "cl",
+    "Grecia":             "gr",
+    "Honduras":           "hn",
+    "Italia":             "it",
   },
 
   // Panamá está en el Grupo L
@@ -82,6 +97,19 @@ const WC2026 = {
     { key: "vsInglaterra", rival: "Inglaterra" },
     { key: "vsCroacia",    rival: "Croacia"    },
     { key: "vsGhana",      rival: "Ghana"      },
+  ],
+
+  // ============================================================
+  // Partidos especiales — predicción de marcador exacto
+  // ============================================================
+  specialMatches: [
+    { key: "mexico_sudafrica",   team1: "México",    team2: "Sudáfrica",  badge: "⚽ Partido Inaugural" },
+    { key: "croacia_inglaterra", team1: "Croacia",   team2: "Inglaterra"  },
+    { key: "colombia_portugal",  team1: "Colombia",  team2: "Portugal"    },
+    { key: "brasil_marruecos",   team1: "Brasil",    team2: "Marruecos"   },
+    { key: "espana_uruguay",     team1: "España",    team2: "Uruguay"     },
+    { key: "argentina_austria",  team1: "Argentina", team2: "Austria"     },
+    { key: "alemania_curazao",   team1: "Alemania",  team2: "Curazao"     },
   ],
 
   // ============================================================
@@ -140,31 +168,48 @@ const WC2026 = {
   // Sistema de puntos (modifica aquí para ajustar)
   // ============================================================
   scoring: {
-    // Fase de grupos
-    grupoPasa:            2,  // equipo pasa a 32avos (posición incorrecta)
-    grupoPosicionCorrecta: 3, // bonus por posición exacta (1° o 2°)
-    terceroPasa:          4,  // acertaste que ese 3° avanzaría
-
-    // Eliminación directa
-    r32:    2,
-    r16:    4,
-    qf:     6,
-    sf:     8,
-    bronze: 7,
-    final:  12,
+    // Fase de grupos (3 pts solo si la posición es exacta)
+    grupoPasa:            0,   // sin puntos por pasar en posición equivocada
+    grupoPosicionCorrecta: 3,
+    terceroPasa:          3,
 
     // Especiales
-    campeon:    20,
-    subcampeon: 12,
-    goleador:   15,
+    campeon:    10,
+    subcampeon:  3,
+    goleador:    3,
+    balonDeOro:  3,
 
-    // Sección Panamá
-    panamaResultado: 5,   // resultado correcto (G/E/P)
-    panamaExacto:   12,   // marcador exacto
+    // Panamá y partidos destacados
+    panamaResultado:  3,
+    panamaExacto:     3,   // bonus adicional por marcador exacto
+    specialResultado: 3,
+    specialExacto:    3,
+
+    // Extras (todos 3 pts)
+    extra: 3,
   },
 
   // ============================================================
-  // Candidatos a Goleador del Torneo (orden alfabético)
+  // Jugadores de Panamá (primer goleador)
+  // ============================================================
+  panamaPlayers: [
+    "Fajardo", "Waterman", "Góndola", "Ismael Díaz",
+    "Bárcenas", "Andrade", "Carrasquilla", "Quintero",
+    "Blackburn", "Davis", "Cummings", "Murillo",
+  ],
+
+  // ============================================================
+  // Candidatos a Balón de Oro
+  // ============================================================
+  balonDeOroCandidates: [
+    "Bellingham", "CR7", "Dembele", "Endrick", "Griezmann",
+    "Haaland", "Kane", "Mbappe", "Pedri", "Vini",
+    "Yamal", "Nuñez", "Valverde", "Rodrygo", "Osimhen",
+    "Pulisic", "Arda Guler", "Joao Felix",
+  ],
+
+  // ============================================================
+  // Candidatos a Goleador del Torneo / Bota de Oro
   // ============================================================
   goleadores: [
     "Arda Guler",
@@ -197,7 +242,7 @@ const WC2026 = {
     "Vini",
     "Waterman",
     "Yamal",
-    "Yo no me llamo Messi",
+    "Messi",
   ],
 
   // ============================================================
@@ -214,21 +259,155 @@ const WC2026 = {
   RESULTS: {
     grupos: {
       A: { primero: "México", segundo: "Corea del Sur" },
-      // ...
+      // ... (un objeto por cada grupo A–L)
     },
-    mejoresTerceros: ["Ecuador", "Francia", ...],
-    knockout: {
-      R32_73: "México",
-      // ...
-    },
-    campeon: "Argentina",
+    mejoresTerceros: ["Ecuador", "Francia", "..."],  // 8 equipos
+    campeon:    "Argentina",
     subcampeon: "Francia",
-    goleador: "Messi",
+    goleador:   "Messi",
+    balonDeOro: "Messi",
     panama: {
       vsInglaterra: { golesPanama: 1, golesRival: 2 },
       vsCroacia:    { golesPanama: 0, golesRival: 0 },
       vsGhana:      { golesPanama: 2, golesRival: 1 },
-    }
+    },
+    specials: {
+      mexico_sudafrica:   { golesTeam1: 1, golesTeam2: 0 },
+      croacia_inglaterra: { golesTeam1: 1, golesTeam2: 2 },
+      colombia_portugal:  { golesTeam1: 0, golesTeam2: 2 },
+      brasil_marruecos:   { golesTeam1: 3, golesTeam2: 0 },
+      espana_uruguay:     { golesTeam1: 2, golesTeam2: 1 },
+      argentina_austria:  { golesTeam1: 3, golesTeam2: 0 },
+      alemania_curazao:   { golesTeam1: 4, golesTeam2: 0 },
+    },
+    extras: {
+      primerGoleadorPanama: "Fajardo",
+      golesYamal:           4,
+      golesVinicius:        5,
+      golesEnFinal:         3,
+      penalesEnFinal:       "no",   // "si" | "no"
+      masGolesCR7Messi:     "messi", // "cr7" | "messi" | "igual"
+    },
   }
   */
+
+  // ============================================================
+  // Historial — últimos 3 mundiales (grupos + bracket)
+  // ============================================================
+  historico: [
+    {
+      year: 2022, host: "Qatar",
+      campeon: "Argentina", subcampeon: "Francia", tercero: "Croacia", cuarto: "Marruecos",
+      groups: {
+        A: ["Países Bajos", "Senegal",       "Ecuador",          "Qatar"],
+        B: ["Inglaterra",   "EE. UU.",        "Irán",             "Gales"],
+        C: ["Argentina",    "Polonia",         "México",           "Arabia Saudí"],
+        D: ["Francia",      "Australia",       "Túnez",            "Dinamarca"],
+        E: ["Japón",        "España",          "Alemania",         "Costa Rica"],
+        F: ["Marruecos",    "Croacia",         "Bélgica",          "Canadá"],
+        G: ["Brasil",       "Suiza",           "Camerún",          "Serbia"],
+        H: ["Portugal",     "Corea del Sur",   "Uruguay",          "Ghana"],
+      },
+      bracket: {
+        r16: [
+          { home: "Países Bajos", score: "3–1",          away: "EE. UU.",       winner: "Países Bajos" },
+          { home: "Argentina",    score: "2–1",          away: "Australia",     winner: "Argentina" },
+          { home: "Francia",      score: "3–1",          away: "Polonia",       winner: "Francia" },
+          { home: "Inglaterra",   score: "3–0",          away: "Senegal",       winner: "Inglaterra" },
+          { home: "Croacia",      score: "1–1 (3–1p)",  away: "Japón",         winner: "Croacia" },
+          { home: "Brasil",       score: "4–1",          away: "Corea del Sur", winner: "Brasil" },
+          { home: "Marruecos",    score: "0–0 (3–0p)",  away: "España",        winner: "Marruecos" },
+          { home: "Portugal",     score: "6–1",          away: "Suiza",         winner: "Portugal" },
+        ],
+        qf: [
+          { home: "Croacia",    score: "1–1 (4–2p)",  away: "Brasil",       winner: "Croacia" },
+          { home: "Argentina",  score: "2–2 (4–3p)",  away: "Países Bajos", winner: "Argentina" },
+          { home: "Marruecos",  score: "1–0",          away: "Portugal",     winner: "Marruecos" },
+          { home: "Francia",    score: "2–1",          away: "Inglaterra",   winner: "Francia" },
+        ],
+        sf: [
+          { home: "Argentina", score: "3–0", away: "Croacia", winner: "Argentina" },
+          { home: "Francia",   score: "2–0", away: "Marruecos", winner: "Francia" },
+        ],
+        tercero: { home: "Croacia",    score: "2–1",          away: "Marruecos", winner: "Croacia" },
+        final:   { home: "Argentina",  score: "3–3 (4–2p)",  away: "Francia",   winner: "Argentina" },
+      },
+    },
+    {
+      year: 2018, host: "Rusia",
+      campeon: "Francia", subcampeon: "Croacia", tercero: "Bélgica", cuarto: "Inglaterra",
+      groups: {
+        A: ["Uruguay",   "Rusia",      "Arabia Saudí",  "Egipto"],
+        B: ["España",    "Portugal",   "Irán",          "Marruecos"],
+        C: ["Francia",   "Dinamarca",  "Perú",          "Australia"],
+        D: ["Croacia",   "Argentina",  "Nigeria",       "Islandia"],
+        E: ["Brasil",    "Suiza",      "Serbia",        "Costa Rica"],
+        F: ["Suecia",    "México",     "Corea del Sur", "Alemania"],
+        G: ["Bélgica",   "Inglaterra", "Túnez",         "Panamá"],
+        H: ["Colombia",  "Japón",      "Senegal",       "Polonia"],
+      },
+      bracket: {
+        r16: [
+          { home: "Francia",    score: "4–3",         away: "Argentina",  winner: "Francia" },
+          { home: "Uruguay",    score: "2–1",         away: "Portugal",   winner: "Uruguay" },
+          { home: "Rusia",      score: "1–1 (4–3p)", away: "España",     winner: "Rusia" },
+          { home: "Croacia",    score: "1–1 (3–2p)", away: "Dinamarca",  winner: "Croacia" },
+          { home: "Brasil",     score: "2–0",         away: "México",     winner: "Brasil" },
+          { home: "Bélgica",    score: "3–2",         away: "Japón",      winner: "Bélgica" },
+          { home: "Suecia",     score: "1–0",         away: "Suiza",      winner: "Suecia" },
+          { home: "Inglaterra", score: "1–1 (4–3p)", away: "Colombia",   winner: "Inglaterra" },
+        ],
+        qf: [
+          { home: "Francia",    score: "2–0", away: "Uruguay",    winner: "Francia" },
+          { home: "Bélgica",    score: "2–1", away: "Brasil",     winner: "Bélgica" },
+          { home: "Croacia",    score: "2–2 (4–3p)", away: "Rusia", winner: "Croacia" },
+          { home: "Inglaterra", score: "2–0", away: "Suecia",     winner: "Inglaterra" },
+        ],
+        sf: [
+          { home: "Francia",    score: "1–0", away: "Bélgica",    winner: "Francia" },
+          { home: "Croacia",    score: "2–1", away: "Inglaterra", winner: "Croacia" },
+        ],
+        tercero: { home: "Bélgica",  score: "2–0", away: "Inglaterra", winner: "Bélgica" },
+        final:   { home: "Francia",  score: "4–2", away: "Croacia",    winner: "Francia" },
+      },
+    },
+    {
+      year: 2014, host: "Brasil",
+      campeon: "Alemania", subcampeon: "Argentina", tercero: "Países Bajos", cuarto: "Brasil",
+      groups: {
+        A: ["Brasil",       "México",     "Croacia",             "Camerún"],
+        B: ["Países Bajos", "Chile",      "España",              "Australia"],
+        C: ["Colombia",     "Grecia",     "Costa de Marfil",     "Japón"],
+        D: ["Costa Rica",   "Uruguay",    "Italia",              "Inglaterra"],
+        E: ["Francia",      "Suiza",      "Ecuador",             "Honduras"],
+        F: ["Argentina",    "Nigeria",    "Bosnia-Herzegovina",  "Irán"],
+        G: ["Alemania",     "EE. UU.",    "Portugal",            "Ghana"],
+        H: ["Bélgica",      "Argelia",    "Rusia",               "Corea del Sur"],
+      },
+      bracket: {
+        r16: [
+          { home: "Brasil",        score: "1–1 (3–2p)",  away: "Chile",       winner: "Brasil" },
+          { home: "Colombia",      score: "2–0",          away: "Uruguay",     winner: "Colombia" },
+          { home: "Francia",       score: "2–0",          away: "Nigeria",     winner: "Francia" },
+          { home: "Alemania",      score: "2–1",          away: "Argelia",     winner: "Alemania" },
+          { home: "Argentina",     score: "1–0",          away: "Suiza",       winner: "Argentina" },
+          { home: "Bélgica",       score: "2–1",          away: "EE. UU.",     winner: "Bélgica" },
+          { home: "Países Bajos",  score: "2–1",          away: "México",      winner: "Países Bajos" },
+          { home: "Costa Rica",    score: "1–1 (5–3p)",  away: "Grecia",      winner: "Costa Rica" },
+        ],
+        qf: [
+          { home: "Alemania",      score: "1–0",          away: "Francia",      winner: "Alemania" },
+          { home: "Brasil",        score: "2–1",          away: "Colombia",     winner: "Brasil" },
+          { home: "Países Bajos",  score: "0–0 (4–3p)",  away: "Costa Rica",   winner: "Países Bajos" },
+          { home: "Argentina",     score: "1–0",          away: "Bélgica",      winner: "Argentina" },
+        ],
+        sf: [
+          { home: "Brasil",     score: "1–7", away: "Alemania",      winner: "Alemania" },
+          { home: "Argentina",  score: "0–0 (4–2p)", away: "Países Bajos", winner: "Argentina" },
+        ],
+        tercero: { home: "Países Bajos", score: "3–0", away: "Brasil",     winner: "Países Bajos" },
+        final:   { home: "Alemania",     score: "1–0", away: "Argentina", winner: "Alemania" },
+      },
+    },
+  ],
 };

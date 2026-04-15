@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial Mundial — Polla Mundialista 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    /* ── Historial page styles ── */
+
+    .hist-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 20px 20px 0;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hist-tab {
+      flex: 1;
+      padding: 11px 0;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--label-3);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-xs);
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+    .hist-tab:hover { background: var(--fill); color: var(--label); }
+    .hist-tab.active {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,122,255,0.28);
+    }
+
+    .hist-content { display: none; }
+    .hist-content.active { display: block; }
+
+    /* Champion card */
+    .champ-card {
+      max-width: 900px;
+      margin: 20px auto 0;
+      padding: 28px 28px 24px;
+      background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+      border-radius: var(--radius);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      box-shadow: var(--shadow);
+    }
+    .champ-trophy-wrap {
+      font-size: 3rem;
+      color: #ffd60a;
+      filter: drop-shadow(0 0 10px rgba(255,214,10,0.55));
+      flex-shrink: 0;
+    }
+    .champ-info { flex: 1; }
+    .champ-host {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+    }
+    .champ-year {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      color: #ffd60a;
+      margin-bottom: 2px;
+    }
+    .champ-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .champ-name .fi { font-size: 1.1rem; border-radius: 2px; }
+    .champ-podium {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .podium-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.75);
+    }
+    .podium-row .fi { border-radius: 2px; }
+    .podium-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      min-width: 80px;
+    }
+
+    /* Groups grid */
+    .hist-section {
+      max-width: 900px;
+      margin: 24px auto 0;
+      padding: 0 20px;
+    }
+    .hist-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--label-4);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hist-section-title i { color: var(--blue); font-size: 0.85rem; }
+
+    .hist-groups-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 720px) { .hist-groups-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 400px) { .hist-groups-grid { grid-template-columns: 1fr 1fr; } }
+
+    .hist-group-card {
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-xs);
+      overflow: hidden;
+    }
+    .hist-group-header {
+      background: var(--blue);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 7px 12px;
+    }
+    .hist-group-teams { padding: 6px 0; }
+    .hist-group-team {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      font-size: 0.83rem;
+      color: var(--label);
+      border-bottom: 1px solid var(--sep-2);
+    }
+    .hist-group-team:last-child { border-bottom: none; }
+    .hist-group-team .pos {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--label-4);
+      min-width: 14px;
+    }
+    .hist-group-team.pos-1 .pos { color: var(--blue); }
+    .hist-group-team.pos-2 .pos { color: var(--label-3); }
+    .hist-group-team .fi { border-radius: 2px; font-size: 0.8rem; }
+    .hist-group-team .team-name { flex: 1; }
+    .hist-group-team.qualified .team-name { font-weight: 600; }
+    .hist-group-team.eliminated { opacity: 0.45; }
+
+    /* Bracket */
+    .bracket-rounds {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      align-items: flex-start;
+    }
+    .bracket-round {
+      flex: 1;
+      min-width: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bracket-round-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--label-4);
+      text-align: center;
+      padding-bottom: 4px;
+    }
+    .bracket-match {
+      background: var(--surface);
+      border-radius: var(--radius-xs);
+      box-shadow: var(--shadow-xs);
+      overflow: hidden;
+    }
+    .bracket-match-score {
+      background: var(--fill-2);
+      padding: 2px 8px;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--label-3);
+      letter-spacing: 0.03em;
+    }
+    .bracket-team {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      color: var(--label);
+      border-bottom: 1px solid var(--sep-2);
+    }
+    .bracket-team:last-child { border-bottom: none; }
+    .bracket-team .fi { border-radius: 2px; font-size: 0.78rem; }
+    .bracket-team.winner { font-weight: 700; color: var(--blue); }
+    .bracket-team.loser { color: var(--label-4); }
+
+    /* Final + 3rd place side by side */
+    .final-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 520px) { .final-row { grid-template-columns: 1fr; } }
+
+    .final-match-card {
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .final-match-label {
+      padding: 8px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .final-match-label.gold { background: linear-gradient(90deg, #b8860b, #ffd60a); color: #1c1c1e; }
+    .final-match-label.bronze { background: linear-gradient(90deg, #7b5c2e, #cd853f); color: #fff; }
+    .final-match-body { padding: 4px 0; }
+    .final-team {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--sep-2);
+    }
+    .final-team:last-child { border-bottom: none; }
+    .final-team .fi { border-radius: 2px; }
+    .final-team.winner { font-weight: 700; }
+    .final-team.loser { color: var(--label-3); }
+    .final-score {
+      margin-left: auto;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--label-3);
+      background: var(--fill);
+      border-radius: 6px;
+      padding: 2px 7px;
+    }
+
+    /* Bottom spacing */
+    .hist-bottom { height: 40px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-brand">
+        <span class="header-trophy"><i class="fa-solid fa-trophy"></i></span>
+        <div class="header-text">
+          <h1>Polla Mundialista 2026</h1>
+          <div class="tagline">
+            <span class="fi fi-pa"></span>
+            <span class="fi fi-us"></span>
+            <span class="fi fi-ca"></span>
+            <span class="fi fi-mx"></span>
+            <span class="tagline-sep">·</span>
+            <span>48 equipos</span>
+          </div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Mi Polla</a>
+        <a href="admin.html">Admin</a>
+        <a href="historico.html" class="active">Historial</a>
+        <a href="manual.html">Manual</a>
+      </nav>
+    </div>
+  </header>
+
+  <main style="padding-bottom: 0;">
+
+    <!-- Tabs -->
+    <div class="hist-tabs" id="hist-tabs"></div>
+
+    <!-- Dynamic content -->
+    <div id="hist-panels"></div>
+
+    <div class="hist-bottom"></div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script>
+    const CC = WC2026.countryCodes;
+
+    function flag(team) {
+      const code = CC[team];
+      if (!code) return '';
+      return `<span class="fi fi-${code}"></span>`;
+    }
+
+    function renderGroups(groups) {
+      const grid = document.createElement('div');
+      grid.className = 'hist-groups-grid';
+      Object.entries(groups).forEach(([grpId, teams]) => {
+        const card = document.createElement('div');
+        card.className = 'hist-group-card';
+        card.innerHTML = `<div class="hist-group-header">Grupo ${grpId}</div>`;
+        const list = document.createElement('div');
+        list.className = 'hist-group-teams';
+        teams.forEach((team, i) => {
+          const pos = i + 1;
+          const qualified = pos <= 2;
+          const div = document.createElement('div');
+          div.className = 'hist-group-team' +
+            (pos === 1 ? ' pos-1' : pos === 2 ? ' pos-2' : '') +
+            (qualified ? ' qualified' : ' eliminated');
+          div.innerHTML = `
+            <span class="pos">${pos}</span>
+            ${flag(team)}
+            <span class="team-name">${team}</span>
+          `;
+          list.appendChild(div);
+        });
+        card.appendChild(list);
+        grid.appendChild(card);
+      });
+      return grid;
+    }
+
+    function matchCard(match) {
+      const div = document.createElement('div');
+      div.className = 'bracket-match';
+      div.innerHTML = `
+        <div class="bracket-match-score">${match.score}</div>
+        <div class="bracket-team ${match.winner === match.home ? 'winner' : 'loser'}">${flag(match.home)} ${match.home}</div>
+        <div class="bracket-team ${match.winner === match.away ? 'winner' : 'loser'}">${flag(match.away)} ${match.away}</div>
+      `;
+      return div;
+    }
+
+    function renderBracket(bracket) {
+      const wrap = document.createElement('div');
+
+      // Scrollable rounds
+      const rounds = document.createElement('div');
+      rounds.className = 'bracket-rounds';
+
+      // R16
+      const r16col = document.createElement('div');
+      r16col.className = 'bracket-round';
+      r16col.innerHTML = '<div class="bracket-round-label">Octavos de Final</div>';
+      bracket.r16.forEach(m => r16col.appendChild(matchCard(m)));
+      rounds.appendChild(r16col);
+
+      // QF
+      const qfcol = document.createElement('div');
+      qfcol.className = 'bracket-round';
+      qfcol.innerHTML = '<div class="bracket-round-label">Cuartos de Final</div>';
+      bracket.qf.forEach(m => qfcol.appendChild(matchCard(m)));
+      rounds.appendChild(qfcol);
+
+      // SF
+      const sfcol = document.createElement('div');
+      sfcol.className = 'bracket-round';
+      sfcol.innerHTML = '<div class="bracket-round-label">Semifinales</div>';
+      bracket.sf.forEach(m => sfcol.appendChild(matchCard(m)));
+      rounds.appendChild(sfcol);
+
+      wrap.appendChild(rounds);
+
+      // Final row
+      const finalRow = document.createElement('div');
+      finalRow.className = 'final-row';
+      finalRow.style.marginTop = '12px';
+
+      // 3rd place
+      const t = bracket.tercero;
+      const thirdCard = document.createElement('div');
+      thirdCard.className = 'final-match-card';
+      thirdCard.innerHTML = `
+        <div class="final-match-label bronze"><i class="fa-solid fa-medal" style="margin-right:6px"></i>Tercer Lugar</div>
+        <div class="final-match-body">
+          <div class="final-team ${t.winner === t.home ? 'winner' : 'loser'}">${flag(t.home)} ${t.home} <span class="final-score">${t.score}</span></div>
+          <div class="final-team ${t.winner === t.away ? 'winner' : 'loser'}">${flag(t.away)} ${t.away}</div>
+        </div>
+      `;
+      finalRow.appendChild(thirdCard);
+
+      // Final
+      const f = bracket.final;
+      const finalCard = document.createElement('div');
+      finalCard.className = 'final-match-card';
+      finalCard.innerHTML = `
+        <div class="final-match-label gold"><i class="fa-solid fa-trophy" style="margin-right:6px"></i>Gran Final</div>
+        <div class="final-match-body">
+          <div class="final-team ${f.winner === f.home ? 'winner' : 'loser'}">${flag(f.home)} ${f.home} <span class="final-score">${f.score}</span></div>
+          <div class="final-team ${f.winner === f.away ? 'winner' : 'loser'}">${flag(f.away)} ${f.away}</div>
+        </div>
+      `;
+      finalRow.appendChild(finalCard);
+
+      wrap.appendChild(finalRow);
+      return wrap;
+    }
+
+    function renderPanel(wc) {
+      const panel = document.createElement('div');
+      panel.className = 'hist-content';
+
+      // Champion card
+      const champ = document.createElement('div');
+      champ.className = 'champ-card';
+      champ.innerHTML = `
+        <div class="champ-trophy-wrap"><i class="fa-solid fa-trophy"></i></div>
+        <div class="champ-info">
+          <div class="champ-host">Mundial de Fútbol · ${wc.host}</div>
+          <div class="champ-year">${wc.year}</div>
+          <div class="champ-name">${flag(wc.campeon)} ${wc.campeon}</div>
+        </div>
+        <div class="champ-podium">
+          <div class="podium-row"><span class="podium-label">Subcampeón</span>${flag(wc.subcampeon)} ${wc.subcampeon}</div>
+          <div class="podium-row"><span class="podium-label">3er lugar</span>${flag(wc.tercero)} ${wc.tercero}</div>
+          <div class="podium-row"><span class="podium-label">4° lugar</span>${flag(wc.cuarto)} ${wc.cuarto}</div>
+        </div>
+      `;
+      panel.appendChild(champ);
+
+      // Groups section
+      const grpSec = document.createElement('div');
+      grpSec.className = 'hist-section';
+      grpSec.innerHTML = `<div class="hist-section-title"><i class="fa-solid fa-layer-group"></i>Fase de Grupos</div>`;
+      grpSec.appendChild(renderGroups(wc.groups));
+      panel.appendChild(grpSec);
+
+      // Bracket section
+      const brkSec = document.createElement('div');
+      brkSec.className = 'hist-section';
+      brkSec.innerHTML = `<div class="hist-section-title"><i class="fa-solid fa-sitemap"></i>Eliminación Directa</div>`;
+      brkSec.appendChild(renderBracket(wc.bracket));
+      panel.appendChild(brkSec);
+
+      return panel;
+    }
+
+    function init() {
+      const tabsEl  = document.getElementById('hist-tabs');
+      const panels  = document.getElementById('hist-panels');
+      const labels  = ['Qatar 2022', 'Rusia 2018', 'Brasil 2014'];
+
+      WC2026.historico.forEach((wc, i) => {
+        const tab = document.createElement('button');
+        tab.className = 'hist-tab' + (i === 0 ? ' active' : '');
+        tab.textContent = labels[i];
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.hist-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.hist-content').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          panels.children[i].classList.add('active');
+        });
+        tabsEl.appendChild(tab);
+
+        const panel = renderPanel(wc);
+        if (i === 0) panel.classList.add('active');
+        panels.appendChild(panel);
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

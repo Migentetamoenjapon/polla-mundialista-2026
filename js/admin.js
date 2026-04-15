@@ -6,16 +6,15 @@ const AdminApp = (function () {
 
   const LS_CACHE = 'polla2026_admin_cache';
 
-  let participants = []; // array de objetos exportados
+  let participants = [];
   let sortKey = 'rank';
   let sortDir = 'asc';
 
   // ─── Login ────────────────────────────────────────────────
   function initLogin() {
-    const form = document.getElementById('login-form');
-    const input = document.getElementById('pwd-input');
+    const form   = document.getElementById('login-form');
+    const input  = document.getElementById('pwd-input');
     const errMsg = document.getElementById('login-error');
-
     if (!form) return;
 
     form.addEventListener('submit', (e) => {
@@ -38,50 +37,38 @@ const AdminApp = (function () {
     });
   }
 
-  // ─── Cargar caché ─────────────────────────────────────────
+  // ─── Caché ────────────────────────────────────────────────
   function loadCachedParticipants() {
     try {
       const raw = localStorage.getItem(LS_CACHE);
-      if (raw) {
-        participants = JSON.parse(raw);
-        renderAll();
-      }
-    } catch (e) {
-      console.error('Error cargando caché admin', e);
-    }
+      if (raw) { participants = JSON.parse(raw); renderAll(); }
+    } catch (e) { console.error('Error cargando caché admin', e); }
   }
 
   function saveCache() {
-    try {
-      localStorage.setItem(LS_CACHE, JSON.stringify(participants));
-    } catch (e) { /* quota */ }
+    try { localStorage.setItem(LS_CACHE, JSON.stringify(participants)); }
+    catch (e) { /* quota */ }
   }
 
-  // ─── Subida de archivos ───────────────────────────────────
+  // ─── Subida ───────────────────────────────────────────────
   function initUpload() {
-    const zone = document.getElementById('upload-zone');
+    const zone      = document.getElementById('upload-zone');
     const fileInput = document.getElementById('file-input');
     if (!zone || !fileInput) return;
 
     zone.addEventListener('click', () => fileInput.click());
-
     fileInput.addEventListener('change', (e) => {
       if (e.target.files.length) handleFiles(e.target.files);
       fileInput.value = '';
     });
-
-    zone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      zone.classList.add('dragover');
-    });
-    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('dragover',  (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', ()  => zone.classList.remove('dragover'));
     zone.addEventListener('drop', (e) => {
       e.preventDefault();
       zone.classList.remove('dragover');
       if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
     });
 
-    // Botón limpiar
     const btnClear = document.getElementById('btn-clear');
     if (btnClear) {
       btnClear.addEventListener('click', () => {
@@ -101,30 +88,21 @@ const AdminApp = (function () {
 
     let added = 0, skipped = 0, errors = 0;
 
-    results.forEach((r, i) => {
-      if (r.status === 'rejected') {
-        errors++;
-        return;
-      }
+    results.forEach((r) => {
+      if (r.status === 'rejected') { errors++; return; }
       const obj = r.value;
-      if (!validateSchema(obj)) {
-        skipped++;
-        return;
-      }
-      // Deduplicar: si existe mismo nombre+timestamp, ignorar
+      if (!validateSchema(obj)) { skipped++; return; }
+
       const key = `${obj.nombre}_${obj.timestamp}`;
       const existIdx = participants.findIndex(
         p => `${p.nombre}_${p.timestamp}` === key
       );
-      if (existIdx >= 0) {
-        skipped++;
-        return;
-      }
-      // Si mismo nombre pero diferente timestamp → reemplazar con el más nuevo
+      if (existIdx >= 0) { skipped++; return; }
+
+      // Mismo nombre, timestamp distinto → reemplazar con el más nuevo
       const sameNameIdx = participants.findIndex(p => p.nombre === obj.nombre);
       if (sameNameIdx >= 0) {
-        const existing = participants[sameNameIdx];
-        if (new Date(obj.timestamp) > new Date(existing.timestamp)) {
+        if (new Date(obj.timestamp) > new Date(participants[sameNameIdx].timestamp)) {
           participants[sameNameIdx] = obj;
           added++;
         } else {
@@ -138,8 +116,8 @@ const AdminApp = (function () {
 
     saveCache();
     renderAll();
-    showToast(`${added} agregado(s), ${skipped} duplicado(s), ${errors} error(es).`,
-      errors > 0 ? 'warning' : 'success');
+    const type = errors > 0 ? 'warning' : 'success';
+    showToast(`${added} agregado(s) · ${skipped} duplicado(s) · ${errors} error(es)`, type);
   }
 
   function readFileAsJSON(file) {
@@ -149,12 +127,9 @@ const AdminApp = (function () {
         return;
       }
       const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          resolve(JSON.parse(e.target.result));
-        } catch {
-          reject(new Error(`JSON inválido: ${file.name}`));
-        }
+      reader.onload  = (e) => {
+        try { resolve(JSON.parse(e.target.result)); }
+        catch { reject(new Error(`JSON inválido: ${file.name}`)); }
       };
       reader.onerror = () => reject(new Error(`Error leyendo ${file.name}`));
       reader.readAsText(file);
@@ -165,7 +140,8 @@ const AdminApp = (function () {
     if (!obj || typeof obj !== 'object') return false;
     if (!obj.nombre || !obj.timestamp || !obj.predicciones) return false;
     const pred = obj.predicciones;
-    if (!pred.grupos || !pred.knockout) return false;
+    // Requerir solo grupos y panama — knockout fue eliminado
+    if (!pred.grupos || !pred.panama) return false;
     return true;
   }
 
@@ -175,90 +151,92 @@ const AdminApp = (function () {
     const s = WC2026.scoring;
     const breakdown = {
       grupos: 0, terceros: 0,
-      r32: 0, r16: 0, qf: 0, sf: 0, bronze: 0, final: 0,
-      campeon: 0, subcampeon: 0, goleador: 0, panama: 0,
+      campeon: 0, subcampeon: 0, goleador: 0, balonDeOro: 0,
+      panama: 0, specials: 0, extras: 0,
     };
 
     if (!results) return { total: 0, breakdown };
 
-    // Grupos
+    // Grupos — 3 pts solo si la posición es exacta
     Object.keys(WC2026.groups).forEach(grpId => {
-      const userPick = pred.grupos?.[grpId];
-      const realResult = results.grupos?.[grpId];
-      if (!userPick || !realResult) return;
-
-      if (userPick.primero && realResult.primero) {
-        if (userPick.primero === realResult.primero) {
-          breakdown.grupos += s.grupoPasa + s.grupoPosicionCorrecta;
-        } else if (userPick.primero === realResult.segundo) {
-          breakdown.grupos += s.grupoPasa;
-        }
-      }
-      if (userPick.segundo && realResult.segundo) {
-        if (userPick.segundo === realResult.segundo) {
-          breakdown.grupos += s.grupoPasa + s.grupoPosicionCorrecta;
-        } else if (userPick.segundo === realResult.primero) {
-          breakdown.grupos += s.grupoPasa;
-        }
-      }
+      const u = pred.grupos?.[grpId];
+      const r = results.grupos?.[grpId];
+      if (!u || !r) return;
+      if (u.primero && u.primero === r.primero) breakdown.grupos += s.grupoPosicionCorrecta;
+      if (u.segundo && u.segundo === r.segundo) breakdown.grupos += s.grupoPosicionCorrecta;
     });
 
     // Mejores terceros
     if (results.mejoresTerceros && Array.isArray(pred.mejoresTerceros)) {
       pred.mejoresTerceros.forEach(team => {
-        if (results.mejoresTerceros.includes(team)) {
-          breakdown.terceros += s.terceroPasa;
-        }
+        if (results.mejoresTerceros.includes(team)) breakdown.terceros += s.terceroPasa;
       });
     }
 
-    // Knockout
-    const roundMap = {
-      r32: WC2026.r32Bracket.map(m => m.matchId),
-      r16: WC2026.r16Bracket.map(m => m.matchId),
-      qf:  WC2026.qfBracket.map(m => m.matchId),
-      sf:  WC2026.sfBracket.map(m => m.matchId),
-      bronze: ['BRONZE'],
-      final:  ['FINAL'],
-    };
-    Object.entries(roundMap).forEach(([roundKey, matchIds]) => {
-      matchIds.forEach(matchId => {
-        const userPick = pred.knockout?.[matchId];
-        const realPick = results.knockout?.[matchId];
-        if (userPick && realPick && userPick === realPick) {
-          breakdown[roundKey] += s[roundKey];
-        }
-      });
-    });
-
     // Campeón y subcampeón
-    if (pred.campeon && pred.campeon === results.campeon)
-      breakdown.campeon = s.campeon;
-    if (pred.subcampeon && pred.subcampeon === results.subcampeon)
-      breakdown.subcampeon = s.subcampeon;
+    if (pred.campeon    && pred.campeon    === results.campeon)    breakdown.campeon    = s.campeon;
+    if (pred.subcampeon && pred.subcampeon === results.subcampeon) breakdown.subcampeon = s.subcampeon;
 
-    // Goleador
+    // Bota de Oro (goleador)
     if (pred.goleador && results.goleador &&
         pred.goleador.trim().toLowerCase() === results.goleador.trim().toLowerCase())
       breakdown.goleador = s.goleador;
 
-    // Panamá
+    // Balón de Oro
+    if (pred.balonDeOro && results.balonDeOro &&
+        pred.balonDeOro.trim().toLowerCase() === results.balonDeOro.trim().toLowerCase())
+      breakdown.balonDeOro = s.balonDeOro;
+
+    // Panamá — resultado: 3 pts · marcador exacto: +3 pts adicionales
     WC2026.panamaMatches.forEach(m => {
-      const userMatch = pred.panama?.[m.key];
-      const realMatch = results.panama?.[m.key];
-      if (!userMatch || !realMatch) return;
-      const uP = parseInt(userMatch.golesPanama), uR = parseInt(userMatch.golesRival);
-      const rP = parseInt(realMatch.golesPanama), rR = parseInt(realMatch.golesRival);
-      if (!isNaN(uP) && !isNaN(uR) && !isNaN(rP) && !isNaN(rR)) {
-        if (uP === rP && uR === rR) {
-          breakdown.panama += s.panamaExacto;
-        } else {
-          const userResult = uP > uR ? 'W' : uP < uR ? 'L' : 'D';
-          const realResult = rP > rR ? 'W' : rP < rR ? 'L' : 'D';
-          if (userResult === realResult) breakdown.panama += s.panamaResultado;
-        }
+      const u = pred.panama?.[m.key];
+      const r = results.panama?.[m.key];
+      if (!u || !r) return;
+      const uP = parseInt(u.golesPanama), uR = parseInt(u.golesRival);
+      const rP = parseInt(r.golesPanama), rR = parseInt(r.golesRival);
+      if (isNaN(uP) || isNaN(uR) || isNaN(rP) || isNaN(rR)) return;
+      if (uP === rP && uR === rR) {
+        breakdown.panama += s.panamaResultado + s.panamaExacto; // 6 pts
+      } else {
+        const uRes = uP > uR ? 'W' : uP < uR ? 'L' : 'D';
+        const rRes = rP > rR ? 'W' : rP < rR ? 'L' : 'D';
+        if (uRes === rRes) breakdown.panama += s.panamaResultado; // 3 pts
       }
     });
+
+    // Partidos especiales — mismo esquema que Panamá
+    if (WC2026.specialMatches && results.specials) {
+      WC2026.specialMatches.forEach(m => {
+        const u = pred.specials?.[m.key];
+        const r = results.specials?.[m.key];
+        if (!u || !r) return;
+        const u1 = parseInt(u.golesTeam1), u2 = parseInt(u.golesTeam2);
+        const r1 = parseInt(r.golesTeam1), r2 = parseInt(r.golesTeam2);
+        if (isNaN(u1) || isNaN(u2) || isNaN(r1) || isNaN(r2)) return;
+        if (u1 === r1 && u2 === r2) {
+          breakdown.specials += s.specialResultado + s.specialExacto; // 6 pts
+        } else {
+          const uRes = u1 > u2 ? 'W' : u1 < u2 ? 'L' : 'D';
+          const rRes = r1 > r2 ? 'W' : r1 < r2 ? 'L' : 'D';
+          if (uRes === rRes) breakdown.specials += s.specialResultado; // 3 pts
+        }
+      });
+    }
+
+    // Extras — 3 pts cada uno
+    const ex  = pred.extras || {};
+    const rex = results.extras || {};
+    if (Object.keys(rex).length) {
+      const cmpStr = (a, b) => a && b && String(a).trim() === String(b).trim();
+      const cmpNum = (a, b) => a !== null && a !== '' && b !== null && Number(a) === Number(b);
+
+      if (cmpStr(ex.primerGoleadorPanama, rex.primerGoleadorPanama)) breakdown.extras += s.extra;
+      if (cmpNum(ex.golesYamal,           rex.golesYamal))           breakdown.extras += s.extra;
+      if (cmpNum(ex.golesVinicius,        rex.golesVinicius))        breakdown.extras += s.extra;
+      if (cmpNum(ex.golesEnFinal,         rex.golesEnFinal))         breakdown.extras += s.extra;
+      if (cmpStr(ex.penalesEnFinal,       rex.penalesEnFinal))       breakdown.extras += s.extra;
+      if (cmpStr(ex.masGolesCR7Messi,     rex.masGolesCR7Messi))     breakdown.extras += s.extra;
+    }
 
     const total = Object.values(breakdown).reduce((a, b) => a + b, 0);
     return { total, breakdown };
@@ -273,10 +251,8 @@ const AdminApp = (function () {
   function updateStats() {
     const el = document.getElementById('stat-count');
     if (el) el.textContent = participants.length;
-    const noResults = document.getElementById('no-results-banner');
-    if (noResults) {
-      noResults.style.display = WC2026.RESULTS ? 'none' : 'flex';
-    }
+    const banner = document.getElementById('no-results-banner');
+    if (banner) banner.style.display = WC2026.RESULTS ? 'none' : 'flex';
   }
 
   function renderTable() {
@@ -286,14 +262,13 @@ const AdminApp = (function () {
     if (participants.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">📂</div>
+          <div class="empty-icon"><i class="fa-solid fa-users"></i></div>
           <p>Ningún archivo cargado todavía.</p>
           <p>Sube los JSON de tus compañeros para ver el ranking.</p>
         </div>`;
       return;
     }
 
-    // Calcular puntos y ordenar
     const scored = participants.map(p => ({
       ...p,
       score: scoreParticipant(p.predicciones),
@@ -301,47 +276,39 @@ const AdminApp = (function () {
 
     scored.sort((a, b) => {
       let va, vb;
-      if (sortKey === 'nombre') { va = a.nombre; vb = b.nombre; }
-      else if (sortKey === 'grupos') { va = a.score.breakdown.grupos; vb = b.score.breakdown.grupos; }
-      else if (sortKey === 'knockout') {
-        va = (a.score.breakdown.r32 + a.score.breakdown.r16 +
-              a.score.breakdown.qf  + a.score.breakdown.sf  +
-              a.score.breakdown.bronze + a.score.breakdown.final);
-        vb = (b.score.breakdown.r32 + b.score.breakdown.r16 +
-              b.score.breakdown.qf  + b.score.breakdown.sf  +
-              b.score.breakdown.bronze + b.score.breakdown.final);
-      }
-      else if (sortKey === 'campeon') { va = a.predicciones.campeon; vb = b.predicciones.campeon; }
-      else { va = a.score.total; vb = b.score.total; }
+      if (sortKey === 'nombre')  { va = a.nombre;               vb = b.nombre; }
+      else if (sortKey === 'grupos')  { va = a.score.breakdown.grupos;  vb = b.score.breakdown.grupos; }
+      else if (sortKey === 'panama')  { va = a.score.breakdown.panama;  vb = b.score.breakdown.panama; }
+      else if (sortKey === 'campeon') { va = a.predicciones.campeon || ''; vb = b.predicciones.campeon || ''; }
+      else { va = a.score.total; vb = b.score.total; } // rank & total
 
-      if (typeof va === 'string') {
+      if (typeof va === 'string')
         return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-      }
       return sortDir === 'asc' ? va - vb : vb - va;
     });
 
-    // Asignar ranks (por total desc)
+    // Rank por total desc (ties comparten posición)
     const byTotal = [...scored].sort((a, b) => b.score.total - a.score.total);
     const rankMap = {};
     byTotal.forEach((p, i) => {
       const prev = i > 0 ? byTotal[i - 1].score.total : null;
-      rankMap[p.nombre + p.timestamp] = (prev === p.score.total && i > 0)
+      const key  = p.nombre + p.timestamp;
+      rankMap[key] = (prev !== null && prev === p.score.total)
         ? rankMap[byTotal[i - 1].nombre + byTotal[i - 1].timestamp]
         : i + 1;
     });
 
-    // Construir tabla
+    const headers = [
+      { key: 'rank',    label: '#',            title: 'Posición en el ranking' },
+      { key: 'nombre',  label: 'Participante',  title: 'Nombre' },
+      { key: 'total',   label: 'Total',         title: 'Puntos totales' },
+      { key: 'grupos',  label: 'Grupos',        title: 'Puntos de grupos' },
+      { key: 'panama',  label: 'Panamá',        title: 'Puntos Especial Panamá' },
+      { key: 'campeon', label: 'Campeón',       title: 'Equipo campeón elegido' },
+    ];
+
     const table = document.createElement('table');
     table.className = 'ranking-table';
-
-    const headers = [
-      { key: 'rank',     label: '#',          title: 'Ranking' },
-      { key: 'nombre',   label: 'Participante', title: 'Nombre' },
-      { key: 'total',    label: 'Total',        title: 'Puntos totales' },
-      { key: 'grupos',   label: 'Grupos',       title: 'Puntos de grupos' },
-      { key: 'knockout', label: 'Elim.',        title: 'Puntos eliminación directa' },
-      { key: 'campeon',  label: 'Campeón',      title: 'Equipo campeón elegido' },
-    ];
 
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
@@ -355,7 +322,7 @@ const AdminApp = (function () {
           sortDir = sortDir === 'asc' ? 'desc' : 'asc';
         } else {
           sortKey = h.key;
-          sortDir = h.key === 'nombre' || h.key === 'campeon' ? 'asc' : 'desc';
+          sortDir = (h.key === 'nombre' || h.key === 'campeon') ? 'asc' : 'desc';
         }
         renderTable();
       });
@@ -366,19 +333,15 @@ const AdminApp = (function () {
 
     const tbody = document.createElement('tbody');
     scored.forEach(p => {
-      const key = p.nombre + p.timestamp;
+      const key  = p.nombre + p.timestamp;
       const rank = rankMap[key];
-      const knockoutPts = p.score.breakdown.r32 + p.score.breakdown.r16 +
-        p.score.breakdown.qf + p.score.breakdown.sf +
-        p.score.breakdown.bronze + p.score.breakdown.final;
-
-      const tr = document.createElement('tr');
+      const tr   = document.createElement('tr');
       tr.innerHTML = `
         <td><span class="rank-badge ${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : ''}">${rank}</span></td>
         <td><strong>${escapeHtml(p.nombre)}</strong></td>
         <td><span class="pts-badge">${p.score.total}</span></td>
         <td>${p.score.breakdown.grupos}</td>
-        <td>${knockoutPts}</td>
+        <td>${p.score.breakdown.panama}</td>
         <td>${p.predicciones.campeon ? teamWithFlag(p.predicciones.campeon) : '—'}</td>
       `;
       tr.addEventListener('click', () => toggleExpandRow(tr, p, rank));
@@ -390,14 +353,14 @@ const AdminApp = (function () {
     container.appendChild(table);
   }
 
+  // ─── Expand row ───────────────────────────────────────────
   function toggleExpandRow(tr, participant, rank) {
-    const existingExpand = tr.nextElementSibling;
-    if (existingExpand && existingExpand.classList.contains('expand-row')) {
-      existingExpand.remove();
+    const existing = tr.nextElementSibling;
+    if (existing && existing.classList.contains('expand-row')) {
+      existing.remove();
       tr.classList.remove('expanded');
       return;
     }
-
     tr.classList.add('expanded');
     const expandTr = document.createElement('tr');
     expandTr.className = 'expand-row';
@@ -409,33 +372,44 @@ const AdminApp = (function () {
   }
 
   function buildExpandContent(p) {
-    const pred = p.predicciones;
+    const pred    = p.predicciones;
     const results = WC2026.RESULTS;
-    const score = scoreParticipant(pred);
+    const score   = scoreParticipant(pred);
 
     function statusClass(predicted, actual) {
       if (!actual) return 'pick-pending';
       return predicted === actual ? 'pick-correct' : 'pick-wrong';
     }
+    function statusClassCI(predicted, actual) {
+      if (!actual) return 'pick-pending';
+      return (predicted || '').trim().toLowerCase() === (actual || '').trim().toLowerCase()
+        ? 'pick-correct' : 'pick-wrong';
+    }
+    function statusClassNum(predicted, actual) {
+      if (actual === null || actual === undefined) return 'pick-pending';
+      if (predicted === null || predicted === '' || predicted === undefined) return 'pick-pending';
+      return Number(predicted) === Number(actual) ? 'pick-correct' : 'pick-wrong';
+    }
 
-    // Grupos
-    let gruposHtml = `<div class="expand-group"><h4>Fase de Grupos</h4>`;
+    // ── Grupos ────────────────────────────────────────────────
+    let gruposHtml = `<div class="expand-group"><h4><i class="fa-solid fa-layer-group"></i> Fase de Grupos</h4>`;
     Object.keys(WC2026.groups).forEach(grpId => {
       const g = pred.grupos?.[grpId];
       const r = results?.grupos?.[grpId];
-      gruposHtml += `<div class="pick-item">
-        <span>G${grpId} 1°</span>
-        <span class="${statusClass(g?.primero, r?.primero)}">${g?.primero ? teamWithFlag(g.primero) : '—'}</span>
-      </div>
-      <div class="pick-item">
-        <span>G${grpId} 2°</span>
-        <span class="${statusClass(g?.segundo, r?.segundo)}">${g?.segundo ? teamWithFlag(g.segundo) : '—'}</span>
-      </div>`;
+      gruposHtml += `
+        <div class="pick-item">
+          <span>Grp ${grpId} — 1°</span>
+          <span class="${statusClass(g?.primero, r?.primero)}">${g?.primero ? teamWithFlag(g.primero) : '—'}</span>
+        </div>
+        <div class="pick-item">
+          <span>Grp ${grpId} — 2°</span>
+          <span class="${statusClass(g?.segundo, r?.segundo)}">${g?.segundo ? teamWithFlag(g.segundo) : '—'}</span>
+        </div>`;
     });
     gruposHtml += `</div>`;
 
-    // Terceros
-    let tercerosHtml = `<div class="expand-group"><h4>Mejores Terceros</h4>`;
+    // ── Terceros ──────────────────────────────────────────────
+    let tercerosHtml = `<div class="expand-group"><h4><i class="fa-solid fa-medal"></i> Mejores Terceros</h4>`;
     (pred.mejoresTerceros || []).forEach(team => {
       const ok = results?.mejoresTerceros?.includes(team);
       tercerosHtml += `<div class="pick-item">
@@ -445,92 +419,108 @@ const AdminApp = (function () {
     });
     tercerosHtml += `</div>`;
 
-    // Knockout resumen
-    let knockHtml = `<div class="expand-group"><h4>Eliminación Directa</h4>`;
-    const allRounds = [
-      { label: 'R32', matches: WC2026.r32Bracket },
-      { label: 'R16', matches: WC2026.r16Bracket },
-      { label: 'QF',  matches: WC2026.qfBracket  },
-      { label: 'SF',  matches: WC2026.sfBracket   },
-      { label: 'Bronce', matches: [WC2026.bronzeMatch] },
-      { label: 'Final',  matches: [WC2026.finalMatch]  },
-    ];
-    allRounds.forEach(({ label, matches }) => {
-      const correct = matches.filter(m => {
-        const u = pred.knockout?.[m.matchId];
-        const r = results?.knockout?.[m.matchId];
-        return u && r && u === r;
-      }).length;
-      knockHtml += `<div class="pick-item">
-        <span>${label}</span>
-        <span class="${results ? (correct > 0 ? 'pick-correct' : 'pick-pending') : 'pick-pending'}">
-          ${correct}/${matches.length}
-        </span>
+    // ── Panamá ────────────────────────────────────────────────
+    let panamaHtml = `<div class="expand-group"><h4>${flagSpan('Panamá')} Especial Panamá</h4>`;
+    WC2026.panamaMatches.forEach(m => {
+      const u = pred.panama?.[m.key];
+      const r = results?.panama?.[m.key];
+      const uScore = (u?.golesPanama !== '' && u?.golesPanama !== undefined) ? `${u.golesPanama}–${u.golesRival}` : '?–?';
+      const rScore = r ? `${r.golesPanama}–${r.golesRival}` : null;
+      let cls = 'pick-pending';
+      if (r && u && u.golesPanama !== '' && u.golesRival !== '') {
+        const exact = parseInt(u.golesPanama) === r.golesPanama && parseInt(u.golesRival) === r.golesRival;
+        cls = exact ? 'pick-correct' : 'pick-wrong';
+      }
+      panamaHtml += `<div class="pick-item">
+        <span>vs ${m.rival}</span>
+        <span class="${cls}">${uScore}${rScore ? ` <span style="opacity:.5;font-size:.75em">(${rScore})</span>` : ''}</span>
       </div>`;
     });
-    knockHtml += `</div>`;
+    panamaHtml += `</div>`;
 
-    // Especiales
-    let specialsHtml = `<div class="expand-group"><h4>Especiales</h4>
+    // ── Partidos Destacados ────────────────────────────────────
+    let specialsHtml = `<div class="expand-group"><h4><i class="fa-solid fa-star"></i> Partidos Destacados</h4>`;
+    WC2026.specialMatches.forEach(m => {
+      const u = pred.specials?.[m.key];
+      const r = results?.specials?.[m.key];
+      const uScore = (u?.golesTeam1 !== '' && u?.golesTeam1 !== undefined) ? `${u.golesTeam1}–${u.golesTeam2}` : '?–?';
+      const rScore = r ? `${r.golesTeam1}–${r.golesTeam2}` : null;
+      let cls = 'pick-pending';
+      if (r && u && u.golesTeam1 !== '' && u.golesTeam2 !== '') {
+        const exact = parseInt(u.golesTeam1) === r.golesTeam1 && parseInt(u.golesTeam2) === r.golesTeam2;
+        cls = exact ? 'pick-correct' : 'pick-wrong';
+      }
+      specialsHtml += `<div class="pick-item">
+        <span>${escapeHtml(m.team1)} vs ${escapeHtml(m.team2)}</span>
+        <span class="${cls}">${uScore}${rScore ? ` <span style="opacity:.5;font-size:.75em">(${rScore})</span>` : ''}</span>
+      </div>`;
+    });
+    specialsHtml += `</div>`;
+
+    // ── Predicciones Especiales ───────────────────────────────
+    let espHtml = `<div class="expand-group"><h4><i class="fa-solid fa-trophy"></i> Predicciones Especiales</h4>
       <div class="pick-item"><span>Campeón</span>
         <span class="${statusClass(pred.campeon, results?.campeon)}">${pred.campeon ? teamWithFlag(pred.campeon) : '—'}</span>
       </div>
       <div class="pick-item"><span>Subcampeón</span>
         <span class="${statusClass(pred.subcampeon, results?.subcampeon)}">${pred.subcampeon ? teamWithFlag(pred.subcampeon) : '—'}</span>
       </div>
-      <div class="pick-item"><span>Goleador</span>
-        <span class="${results ? (pred.goleador?.toLowerCase() === results.goleador?.toLowerCase() ? 'pick-correct' : 'pick-wrong') : 'pick-pending'}">${escapeHtml(pred.goleador || '—')}</span>
+      <div class="pick-item"><span>Bota de Oro</span>
+        <span class="${statusClassCI(pred.goleador, results?.goleador)}">${escapeHtml(pred.goleador || '—')}</span>
+      </div>
+      <div class="pick-item"><span>Balón de Oro</span>
+        <span class="${statusClassCI(pred.balonDeOro, results?.balonDeOro)}">${escapeHtml(pred.balonDeOro || '—')}</span>
       </div>
     </div>`;
 
-    // Panamá
-    let panamaHtml = `<div class="expand-group"><h4>🇵🇦 Panamá</h4>`;
-    WC2026.panamaMatches.forEach(m => {
-      const u = pred.panama?.[m.key];
-      const r = results?.panama?.[m.key];
-      const uScore = u ? `${u.golesPanama}–${u.golesRival}` : '?–?';
-      const rScore = r ? `${r.golesPanama}–${r.golesRival}` : '';
-      let cls = 'pick-pending';
-      if (r && u) {
-        const exact = parseInt(u.golesPanama) === r.golesPanama && parseInt(u.golesRival) === r.golesRival;
-        cls = exact ? 'pick-correct' : 'pick-wrong';
-      }
-      panamaHtml += `<div class="pick-item">
-        <span>vs ${m.rival}</span>
-        <span class="${cls}">${uScore}${rScore ? ` (real: ${rScore})` : ''}</span>
-      </div>`;
-    });
-    panamaHtml += `</div>`;
-
-    // Puntos breakdown
-    let ptsHtml = `<div class="expand-group"><h4>Desglose de Puntos</h4>`;
-    const bk = score.breakdown;
-    const rows = [
-      ['Grupos',        bk.grupos],
-      ['3ros',          bk.terceros],
-      ['R32',           bk.r32],
-      ['R16',           bk.r16],
-      ['Cuartos',       bk.qf],
-      ['Semifinales',   bk.sf],
-      ['Bronce',        bk.bronze],
-      ['Final',         bk.final],
-      ['Campeón',       bk.campeon],
-      ['Subcampeón',    bk.subcampeon],
-      ['Goleador',      bk.goleador],
-      ['Panamá',        bk.panama],
+    // ── Extras ────────────────────────────────────────────────
+    const ex  = pred.extras  || {};
+    const rex = results?.extras || {};
+    const extrasRows = [
+      { label: '1er gol Panamá',  val: ex.primerGoleadorPanama, real: rex.primerGoleadorPanama, type: 'str'  },
+      { label: 'Goles Yamal',     val: ex.golesYamal,           real: rex.golesYamal,           type: 'num'  },
+      { label: 'Goles Vinicius',  val: ex.golesVinicius,        real: rex.golesVinicius,        type: 'num'  },
+      { label: 'Goles en Final',  val: ex.golesEnFinal,         real: rex.golesEnFinal,         type: 'num'  },
+      { label: 'Penales Final',   val: ex.penalesEnFinal,       real: rex.penalesEnFinal,       type: 'str'  },
+      { label: 'CR7 vs Messi',    val: ex.masGolesCR7Messi,     real: rex.masGolesCR7Messi,     type: 'str'  },
     ];
-    rows.forEach(([label, val]) => {
+    let extHtml = `<div class="expand-group"><h4><i class="fa-solid fa-bolt"></i> Extras</h4>`;
+    extrasRows.forEach(row => {
+      const display = (row.val !== null && row.val !== '' && row.val !== undefined)
+        ? escapeHtml(String(row.val)) : '—';
+      const cls = row.type === 'num'
+        ? statusClassNum(row.val, row.real)
+        : statusClass(row.val || '', row.real || '');
+      extHtml += `<div class="pick-item"><span>${row.label}</span><span class="${cls}">${display}</span></div>`;
+    });
+    extHtml += `</div>`;
+
+    // ── Desglose de Puntos ────────────────────────────────────
+    const bk = score.breakdown;
+    const bkRows = [
+      ['Grupos',       bk.grupos],
+      ['Terceros',     bk.terceros],
+      ['Panamá',       bk.panama],
+      ['Destacados',   bk.specials],
+      ['Campeón',      bk.campeon],
+      ['Subcampeón',   bk.subcampeon],
+      ['Bota de Oro',  bk.goleador],
+      ['Balón de Oro', bk.balonDeOro],
+      ['Extras',       bk.extras],
+    ];
+    let ptsHtml = `<div class="expand-group"><h4><i class="fa-solid fa-chart-bar"></i> Desglose</h4>`;
+    bkRows.forEach(([label, val]) => {
       ptsHtml += `<div class="pick-item">
         <span>${label}</span>
         <span class="${val > 0 ? 'pick-correct' : 'pick-pending'}">${val} pts</span>
       </div>`;
     });
-    ptsHtml += `<div class="pick-item" style="font-weight:700;border-top:2px solid var(--azul);margin-top:4px;padding-top:4px">
+    ptsHtml += `<div class="pick-item pick-total">
       <span>TOTAL</span><span class="pts-badge">${score.total}</span>
     </div></div>`;
 
     return `<div class="expand-content">
-      ${gruposHtml}${tercerosHtml}${knockHtml}${specialsHtml}${panamaHtml}${ptsHtml}
+      ${gruposHtml}${tercerosHtml}${panamaHtml}${specialsHtml}${espHtml}${extHtml}${ptsHtml}
     </div>`;
   }
 
@@ -549,10 +539,10 @@ const AdminApp = (function () {
       document.body.appendChild(toast);
     }
     const colors = {
-      success: { bg:'#1a9c4a', color:'#fff' },
-      error:   { bg:'#CF142B', color:'#fff' },
-      warning: { bg:'#e07b00', color:'#fff' },
-      info:    { bg:'#003893', color:'#fff' },
+      success: { bg: '#059669', color: '#fff' },
+      error:   { bg: '#dc2626', color: '#fff' },
+      warning: { bg: '#d97706', color: '#fff' },
+      info:    { bg: '#3b5bdb', color: '#fff' },
     };
     const c = colors[type] || colors.info;
     toast.style.background = c.bg;
@@ -567,15 +557,13 @@ const AdminApp = (function () {
   function escapeHtml(str) {
     if (!str) return '';
     return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   function flagSpan(teamName) {
     const code = WC2026.countryCodes?.[teamName] || 'un';
-    return `<span class="fi fi-${code}" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.2);margin-right:4px"></span>`;
+    return `<span class="fi fi-${code}" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.2);margin-right:4px;vertical-align:middle"></span>`;
   }
 
   function teamWithFlag(teamName) {

@@ -3,197 +3,165 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Polla Mundialista 2026 🇵🇦</title>
+  <title>Polla Mundialista 2026</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════════════════
-       HEADER
-  ═══════════════════════════════════════════════════════ -->
   <header>
-    <div class="header-top">
+    <div class="header-inner">
       <div class="header-brand">
-        <div class="trophy-wrap">🏆</div>
+        <span class="header-trophy"><i class="fa-solid fa-trophy"></i></span>
         <div class="header-text">
-          <h1>Polla Mundialista 2026 🇵🇦</h1>
-          <div class="tagline">🇺🇸 🇨🇦 🇲🇽 &nbsp;·&nbsp; 48 equipos &nbsp;·&nbsp; ¡Arriba los Canaleros!</div>
+          <h1>Polla Mundialista 2026</h1>
+          <div class="tagline">
+            <span class="fi fi-pa"></span>
+            <span class="fi fi-us"></span>
+            <span class="fi fi-ca"></span>
+            <span class="fi fi-mx"></span>
+            <span class="tagline-sep">·</span>
+            <span>48 equipos</span>
+          </div>
         </div>
       </div>
       <nav>
-        <a href="index.html" class="active">⚽ Mi Polla</a>
-        <a href="admin.html">🔐 Admin</a>
-        <a href="manual.html">📖 Manual</a>
+        <a href="index.html" class="active">Mi Polla</a>
+        <a href="admin.html">Admin</a>
+        <a href="historico.html">Historial</a>
+        <a href="manual.html">Manual</a>
       </nav>
     </div>
-    <div class="header-flag-strip"></div>
   </header>
 
-  <!-- Banner de bloqueado -->
   <div class="locked-banner" id="locked-banner">
-    🔒 Tu predicción ya fue exportada. No puedes modificarla.
+    🔒 Tu predicción ya fue exportada.
     &nbsp;—&nbsp;
-    <a href="#" id="btn-reset" style="color:inherit;text-decoration:underline;cursor:pointer;">
-      Reiniciar (borra todo)
-    </a>
+    <a href="#" id="btn-reset">Reiniciar (borra todo)</a>
   </div>
 
   <main>
 
-    <!-- ─────────────────────────────────────────────────────
-         SECCIÓN 1: NOMBRE
-    ───────────────────────────────────────────────────── -->
-    <section class="form-section">
-      <div class="section-header">
-        <span class="section-icon">👤</span>
-        <div>
+    <!-- NOMBRE -->
+    <section class="form-section" data-section-id="nombre">
+      <div class="section-header" data-collapsible aria-expanded="false">
+        <span class="section-icon"><i class="fa-solid fa-user"></i></span>
+        <div class="section-header-text">
           <h2>Tu Nombre</h2>
           <div class="section-sub">Identifica tu predicción</div>
         </div>
+        <span class="section-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="section-body">
-        <input
-          type="text"
-          id="input-nombre"
-          class="nombre-input"
-          placeholder="Escribe tu nombre completo..."
-          maxlength="60"
-          autocomplete="off"
-        >
+        <input type="text" id="input-nombre" class="nombre-input"
+          placeholder="Escribe tu nombre completo…" maxlength="60" autocomplete="off">
       </div>
     </section>
 
-    <!-- ─────────────────────────────────────────────────────
-         SECCIÓN 2: FASE DE GRUPOS
-    ───────────────────────────────────────────────────── -->
-    <section class="form-section">
-      <div class="section-header">
-        <span class="section-icon">🏟️</span>
-        <div>
+    <!-- FASE DE GRUPOS -->
+    <section class="form-section" data-section-id="grupos">
+      <div class="section-header" data-collapsible aria-expanded="false">
+        <span class="section-icon"><i class="fa-solid fa-layer-group"></i></span>
+        <div class="section-header-text">
           <h2>Fase de Grupos</h2>
-          <div class="section-sub">¿Quién queda 1° y 2° en cada grupo?</div>
+          <div class="section-sub">3 pts por equipo en posición correcta · 12 grupos · 24 picks</div>
         </div>
+        <div class="pts-pill">72 pts</div>
+        <span class="section-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div id="groups-grid-all" class="section-body"></div>
     </section>
 
-    <!-- ─────────────────────────────────────────────────────
-         SECCIÓN 3: MEJORES TERCEROS
-    ───────────────────────────────────────────────────── -->
-    <section class="form-section">
-      <div class="section-header">
-        <span class="section-icon">🥉</span>
-        <div>
+    <!-- MEJORES TERCEROS -->
+    <section class="form-section" data-section-id="terceros">
+      <div class="section-header" data-collapsible aria-expanded="false">
+        <span class="section-icon"><i class="fa-solid fa-medal"></i></span>
+        <div class="section-header-text">
           <h2>Mejores Terceros</h2>
-          <div class="section-sub">¿Cuáles 8 equipos terceros avanzarán a la Ronda de 32?</div>
+          <div class="section-sub">3 pts solo si el equipo realmente avanzó como 3° · 8 a elegir</div>
         </div>
+        <div class="pts-pill">24 pts</div>
+        <span class="section-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="section-body">
         <div class="terceros-info">
-          De los 12 grupos, solo los <strong>8 mejores equipos que queden en 3er lugar</strong>
-          avanzarán a la Ronda de 32. Selecciona exactamente 8.
-          &nbsp;|&nbsp; Seleccionados: <span id="terceros-count" class="terceros-counter">0/8</span>
-          <br><span class="text-muted mt-8" style="display:block;margin-top:6px">
-            Los equipos en gris ya los escogiste como 1° o 2°. Puedes seleccionarlos igual, pero recuerda que no pueden clasificar como terceros.
-          </span>
+          De los 12 grupos, los <strong>8 mejores equipos en 3er lugar</strong> avanzan a la Ronda de 32.
+          <strong>Solo sumas puntos si el equipo que elegiste realmente clasificó como 3°.</strong>
+          &nbsp;·&nbsp; Seleccionados: <span id="terceros-count" class="terceros-counter">0/8</span>
         </div>
         <div id="terceros-container"></div>
       </div>
     </section>
 
-    <!-- ─────────────────────────────────────────────────────
-         SECCIÓN 4: ELIMINACIÓN DIRECTA
-    ───────────────────────────────────────────────────── -->
-    <section class="form-section">
-      <div class="section-header">
-        <span class="section-icon">⚔️</span>
-        <div>
-          <h2>Eliminación Directa</h2>
-          <div class="section-sub">Completa los grupos primero — los equipos aparecen automáticamente</div>
+    <!-- ESPECIAL PANAMÁ -->
+    <section class="form-section" data-section-id="panama">
+      <div class="section-header" data-collapsible aria-expanded="false">
+        <span class="section-icon"><span class="fi fi-pa" style="border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.18)"></span></span>
+        <div class="section-header-text">
+          <h2>Especial Panamá</h2>
+          <div class="section-sub">3 pts resultado correcto · +3 pts si aciertas el marcador exacto</div>
         </div>
+        <div class="pts-pill">Hasta 18 pts</div>
+        <span class="section-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="section-body">
-        <div id="knockout-container"></div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────────────
-         SECCIÓN 5: ESPECIAL PANAMÁ
-    ───────────────────────────────────────────────────── -->
-    <section class="form-section">
-      <div class="section-header panama-header">
-        <span class="section-icon">🇵🇦</span>
-        <div>
-          <h2>⭐ Especial Panamá ⭐</h2>
-          <div class="section-sub">Grupo L · ¡Predice los marcadores exactos de los Canaleros!</div>
-        </div>
-      </div>
-      <div class="section-body">
-        <p class="text-muted" style="margin-bottom:16px">
-          Predice los goles exactos en cada partido de Panamá en la fase de grupos.
-          ¡Marcador exacto = puntos extra!
-        </p>
         <div class="panama-matches" id="panama-matches-container"></div>
       </div>
     </section>
 
-    <!-- ─────────────────────────────────────────────────────
-         SECCIÓN 6: CAMPEÓN, SUBCAMPEÓN Y GOLEADOR
-    ───────────────────────────────────────────────────── -->
-    <section class="form-section">
-      <div class="section-header gold-header">
-        <span class="section-icon">🏆</span>
-        <div>
-          <h2>Predicciones Especiales ⭐</h2>
-          <div class="section-sub">Los picks con más puntos en juego — ¡no los dejes vacíos!</div>
+    <!-- PARTIDOS DESTACADOS -->
+    <section class="form-section" data-section-id="destacados">
+      <div class="section-header" data-collapsible aria-expanded="false">
+        <span class="section-icon"><i class="fa-solid fa-star"></i></span>
+        <div class="section-header-text">
+          <h2>Partidos Destacados</h2>
+          <div class="section-sub">3 pts resultado correcto · +3 pts si aciertas el marcador exacto</div>
         </div>
+        <div class="pts-pill">Hasta 42 pts</div>
+        <span class="section-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="section-body">
-        <div class="specials-grid">
-          <div class="special-card">
-            <div class="special-card-header">🥇 Campeón del Mundial</div>
-            <div class="special-card-body">
-              <select id="select-campeon" class="special-select">
-                <option value="">-- elige --</option>
-              </select>
-            </div>
-          </div>
-          <div class="special-card">
-            <div class="special-card-header">🥈 Subcampeón</div>
-            <div class="special-card-body">
-              <select id="select-subcampeon" class="special-select">
-                <option value="">-- elige --</option>
-              </select>
-            </div>
-          </div>
-          <div class="special-card">
-            <div class="special-card-header">⚽ Goleador del Torneo</div>
-            <div class="special-card-body">
-              <select id="select-goleador" class="special-select">
-                <option value="">-- elige --</option>
-              </select>
-            </div>
-          </div>
-        </div>
+        <div class="panama-matches" id="special-matches-container"></div>
       </div>
+    </section>
+
+    <!-- PREDICCIONES ESPECIALES -->
+    <section class="form-section" data-section-id="predicciones">
+      <div class="section-header" data-collapsible aria-expanded="false">
+        <span class="section-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+        <div class="section-header-text">
+          <h2>Predicciones Especiales</h2>
+          <div class="section-sub">Campeón 10 pts · Resto 3 pts cada uno · 10 predicciones</div>
+        </div>
+        <div class="pts-pill">37 pts</div>
+        <span class="section-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="section-body" id="specials-container"></div>
     </section>
 
   </main>
 
-  <!-- ═══════════════════════════════════════════════════════
-       BARRA DE PROGRESO (sticky)
-  ═══════════════════════════════════════════════════════ -->
   <div id="progress-footer">
     <div class="progress-inner">
       <div class="progress-bar-wrap">
         <div class="progress-label">
-          <strong>Progreso de tu predicción</strong>
-          <span id="progress-label">0% completado</span>
+          <strong>Predicción</strong>
+          <span id="progress-label">0%</span>
         </div>
-        <progress id="progress-bar" value="0" max="67"></progress>
+        <progress id="progress-bar" value="0" max="56"></progress>
+        <div class="progress-total-pts">Total posible: <strong>193 pts</strong></div>
       </div>
-      <button id="btn-export" disabled>Exportar (0% completado)</button>
+      <div class="footer-btns">
+        <button id="btn-reset-form" class="btn-reset-form">Reiniciar</button>
+        <button id="btn-export" disabled>Exportar</button>
+      </div>
     </div>
   </div>
 

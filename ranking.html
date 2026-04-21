@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking — Polla Mundialista 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-brand">
+        <span class="header-trophy"><i class="fa-solid fa-trophy"></i></span>
+        <div class="header-text">
+          <h1>Polla Mundialista <span class="h1-year">2026</span></h1>
+          <div class="tagline">
+            <span class="fi fi-us"></span>
+            <span class="fi fi-ca"></span>
+            <span class="fi fi-mx"></span>
+            <span class="tagline-sep">·</span>
+            <span>Ranking</span>
+          </div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Mi Polla</a>
+        <a href="ranking.html" class="active">Ranking</a>
+        <a href="admin.html">Admin</a>
+        <a href="historico.html">Historial</a>
+        <a href="manual.html">Manual</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Tab Bar -->
+    <div class="admin-tabs-bar">
+      <button class="admin-tab-btn active" data-tab="ranking">
+        <i class="fa-solid fa-trophy"></i> Ranking
+      </button>
+      <button class="admin-tab-btn" data-tab="selecciones">
+        <i class="fa-solid fa-users"></i> Selecciones
+      </button>
+    </div>
+
+    <!-- TAB: Ranking -->
+    <div id="tab-ranking" class="admin-tab-content active">
+      <section class="form-section">
+        <div class="section-header">
+          <span class="section-icon"><i class="fa-solid fa-trophy"></i></span>
+          <div class="section-header-text">
+            <h2>Ranking</h2>
+            <div class="section-sub">Haz clic en una fila para ver el detalle completo</div>
+          </div>
+        </div>
+        <div class="section-body" style="padding:0">
+
+          <div class="stats-bar" style="padding:12px 16px">
+            <div class="stat-chip">
+              Participantes: <strong id="stat-count">0</strong>
+            </div>
+            <div class="stat-chip warning" id="no-results-banner" style="display:none;align-items:center;gap:6px">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <span>Resultados pendientes — puntuación en ceros</span>
+            </div>
+          </div>
+
+          <div class="ranking-table-wrap">
+            <div id="table-container">
+              <div class="empty-state">
+                <div class="empty-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+                <p>El organizador aún no ha cargado las predicciones.</p>
+                <p>Vuelve más tarde para ver el ranking.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB: Selecciones -->
+    <div id="tab-selecciones" class="admin-tab-content">
+      <div id="selecciones-container"></div>
+    </div>
+
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/ranking.js"></script>
+</body>
+</html>

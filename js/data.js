@@ -287,11 +287,13 @@ const WC2026 = {
       golesYamal:           4,
       golesVinicius:        5,
       golesEnFinal:         3,
-      penalesEnFinal:       "no",   // "si" | "no"
+      argentinaSemis:       "si",   // "si" | "no"
       masGolesCR7Messi:     "messi", // "cr7" | "messi" | "igual"
       equipoMasGoles:       "Francia",
       equipoMasGoleado:     "Arabia Saudí",
       mayorGoleada:         5,      // diferencia de goles del partido más abultado
+      españaCuartos:        "si",   // "si" | "no"
+      concacafOctavos:      "si",   // "si" | "no"
     },
   }
   */

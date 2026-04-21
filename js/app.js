@@ -12,11 +12,12 @@ const App = (function () {
   // nombre(1) + grupos(12×2=24) + terceros_completo(1)
   // + panama(6: 3×2) + specials(16: 8×2)
   // + campeon(1) + subcampeon(1) + goleador(1) + balonDeOro(1)
-  // + extras(9): primerGoleadorPanama, golesYamal, golesVinicius,
-  //              golesEnFinal, penalesEnFinal, masGolesCR7Messi,
-  //              equipoMasGoles, equipoMasGoleado, mayorGoleada
-  // = 61
-  const TOTAL_FIELDS = 61;
+  // + extras(11): primerGoleadorPanama, golesYamal, golesVinicius,
+  //               golesEnFinal, argentinaSemis, masGolesCR7Messi,
+  //               equipoMasGoles, equipoMasGoleado, mayorGoleada,
+  //               españaCuartos, concacafOctavos
+  // = 63
+  const TOTAL_FIELDS = 63;
 
   // ─── Estado ──────────────────────────────────────────────
   let state = {
@@ -34,11 +35,13 @@ const App = (function () {
         golesYamal:      null,
         golesVinicius:   null,
         golesEnFinal:    null,
-        penalesEnFinal:  '',    // 'si' | 'no'
+        argentinaSemis:  '',    // 'si' | 'no'
         masGolesCR7Messi: '',   // 'cr7' | 'messi' | 'igual'
         equipoMasGoles:   '',
         equipoMasGoleado: '',
         mayorGoleada:    null,
+        españaCuartos:   '',    // 'si' | 'no'
+        concacafOctavos: '',    // 'si' | 'no'
       },
       panama: {
         vsInglaterra: { golesPanama: '', golesRival: '' },
@@ -421,20 +424,20 @@ const App = (function () {
             'Goles en la Final', 'Total entre ambos equipos', '<i class="fa-solid fa-futbol"></i>', 0, 20)}
 
           <div class="pred-card">
-            <div class="pred-card-icon"><i class="fa-solid fa-bullseye"></i></div>
-            <div class="pred-card-title">¿Habrá penales en la Final?</div>
-            <div class="pred-card-sub">¿Llega a definirse en tanda?</div>
+            <div class="pred-card-icon"><span class="fi fi-ar" style="border-radius:4px;box-shadow:0 1px 5px rgba(0,0,0,.2);font-size:1.5rem"></span></div>
+            <div class="pred-card-title">¿Argentina llega a semifinales?</div>
+            <div class="pred-card-sub">¿La Albiceleste llega al top 4?</div>
             <div class="pred-pts-tag">3 pts</div>
-            ${toggleHtml('penalesEnFinal', [
+            ${toggleHtml('argentinaSemis', [
               { val: 'si', label: 'Sí' },
               { val: 'no', label: 'No' }
-            ], pred.extras.penalesEnFinal)}
+            ], pred.extras.argentinaSemis)}
           </div>
 
           <div class="pred-card">
             <div class="pred-card-icon"><i class="fa-solid fa-bolt"></i></div>
-            <div class="pred-card-title">CR7 vs Messi: Penales</div>
-            <div class="pred-card-sub">¿Quién mete más penales en el torneo?</div>
+            <div class="pred-card-title">CR7 vs Messi: Goles</div>
+            <div class="pred-card-sub">¿Quién mete más goles en el torneo?</div>
             <div class="pred-pts-tag">3 pts</div>
             ${toggleHtml('masGolesCR7Messi', [
               { val: 'cr7',   label: '<span class="fi fi-pt" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.18);margin-right:4px;vertical-align:middle"></span>CR7' },
@@ -464,6 +467,28 @@ const App = (function () {
             'Diferencia de goles del partido más abultado',
             '<i class="fa-solid fa-fire-flame-curved" style="color:#f97316"></i>', 1, 20)}
 
+          <div class="pred-card">
+            <div class="pred-card-icon"><span class="fi fi-es" style="border-radius:4px;box-shadow:0 1px 5px rgba(0,0,0,.2);font-size:1.5rem"></span></div>
+            <div class="pred-card-title">¿España llega a cuartos?</div>
+            <div class="pred-card-sub">¿La Roja supera los octavos?</div>
+            <div class="pred-pts-tag">3 pts</div>
+            ${toggleHtml('españaCuartos', [
+              { val: 'si', label: 'Sí' },
+              { val: 'no', label: 'No' }
+            ], pred.extras.españaCuartos)}
+          </div>
+
+          <div class="pred-card">
+            <div class="pred-card-icon"><i class="fa-solid fa-globe-americas" style="color:var(--green)"></i></div>
+            <div class="pred-card-title">¿CONCACAF en octavos?</div>
+            <div class="pred-card-sub">¿Algún equipo de la región llega a 16?</div>
+            <div class="pred-pts-tag">3 pts</div>
+            ${toggleHtml('concacafOctavos', [
+              { val: 'si', label: 'Sí' },
+              { val: 'no', label: 'No' }
+            ], pred.extras.concacafOctavos)}
+          </div>
+
         </div>
       </div>
     `;
@@ -492,9 +517,10 @@ const App = (function () {
         pred.extras.golesYamal !== null && pred.extras.golesYamal !== '' &&
         pred.extras.golesVinicius !== null && pred.extras.golesVinicius !== '' &&
         pred.extras.golesEnFinal !== null && pred.extras.golesEnFinal !== '' &&
-        pred.extras.penalesEnFinal && pred.extras.masGolesCR7Messi &&
+        pred.extras.argentinaSemis && pred.extras.masGolesCR7Messi &&
         pred.extras.equipoMasGoles && pred.extras.equipoMasGoleado &&
-        pred.extras.mayorGoleada !== null && pred.extras.mayorGoleada !== ''),
+        pred.extras.mayorGoleada !== null && pred.extras.mayorGoleada !== '' &&
+        pred.extras.españaCuartos && pred.extras.concacafOctavos),
     };
 
     Object.entries(done).forEach(([id, isDone]) => {
@@ -538,17 +564,19 @@ const App = (function () {
     if (pred.subcampeon) count++;
     if (pred.balonDeOro?.trim()) count++;
 
-    // Extras = 9
+    // Extras = 11
     const ex = pred.extras;
     if (ex.primerGoleadorPanama) count++;
     if (ex.golesYamal !== null && ex.golesYamal !== '') count++;
     if (ex.golesVinicius !== null && ex.golesVinicius !== '') count++;
     if (ex.golesEnFinal !== null && ex.golesEnFinal !== '') count++;
-    if (ex.penalesEnFinal) count++;
+    if (ex.argentinaSemis) count++;
     if (ex.masGolesCR7Messi) count++;
     if (ex.equipoMasGoles) count++;
     if (ex.equipoMasGoleado) count++;
     if (ex.mayorGoleada !== null && ex.mayorGoleada !== '') count++;
+    if (ex.españaCuartos) count++;
+    if (ex.concacafOctavos) count++;
 
     return count;
   }

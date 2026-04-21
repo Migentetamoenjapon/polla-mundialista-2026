@@ -281,11 +281,13 @@ const AdminApp = (function () {
       if (cmpNum(ex.golesYamal,           rex.golesYamal))           breakdown.extras += s.extra;
       if (cmpNum(ex.golesVinicius,        rex.golesVinicius))        breakdown.extras += s.extra;
       if (cmpNum(ex.golesEnFinal,         rex.golesEnFinal))         breakdown.extras += s.extra;
-      if (cmpStr(ex.penalesEnFinal,       rex.penalesEnFinal))       breakdown.extras += s.extra;
+      if (cmpStr(ex.argentinaSemis,       rex.argentinaSemis))       breakdown.extras += s.extra;
       if (cmpStr(ex.masGolesCR7Messi,     rex.masGolesCR7Messi))     breakdown.extras += s.extra;
       if (cmpStr(ex.equipoMasGoles,       rex.equipoMasGoles))       breakdown.extras += s.extra;
       if (cmpStr(ex.equipoMasGoleado,     rex.equipoMasGoleado))     breakdown.extras += s.extra;
       if (cmpNum(ex.mayorGoleada,         rex.mayorGoleada))         breakdown.extras += s.extra;
+      if (cmpStr(ex.españaCuartos,        rex.españaCuartos))        breakdown.extras += s.extra;
+      if (cmpStr(ex.concacafOctavos,      rex.concacafOctavos))      breakdown.extras += s.extra;
     }
 
     const total = Object.values(breakdown).reduce((a, b) => a + b, 0);
@@ -529,15 +531,17 @@ const AdminApp = (function () {
     const ex  = pred.extras  || {};
     const rex = results?.extras || {};
     const extrasRows = [
-      { label: '1er gol Panamá',  val: ex.primerGoleadorPanama, real: rex.primerGoleadorPanama, type: 'str'  },
-      { label: 'Goles Yamal',     val: ex.golesYamal,           real: rex.golesYamal,           type: 'num'  },
-      { label: 'Goles Vinicius',  val: ex.golesVinicius,        real: rex.golesVinicius,        type: 'num'  },
-      { label: 'Goles en Final',  val: ex.golesEnFinal,         real: rex.golesEnFinal,         type: 'num'  },
-      { label: 'Penales Final',   val: ex.penalesEnFinal,       real: rex.penalesEnFinal,       type: 'str'  },
-      { label: 'CR7 vs Messi',    val: ex.masGolesCR7Messi,     real: rex.masGolesCR7Messi,     type: 'str'  },
-      { label: 'Más goles',       val: ex.equipoMasGoles,       real: rex.equipoMasGoles,       type: 'str'  },
-      { label: 'Más goleado',     val: ex.equipoMasGoleado,     real: rex.equipoMasGoleado,     type: 'str'  },
-      { label: 'Mayor goleada',   val: ex.mayorGoleada,         real: rex.mayorGoleada,         type: 'num'  },
+      { label: '1er gol Panamá',      val: ex.primerGoleadorPanama, real: rex.primerGoleadorPanama, type: 'str' },
+      { label: 'Goles Yamal',         val: ex.golesYamal,           real: rex.golesYamal,           type: 'num' },
+      { label: 'Goles Vinicius',      val: ex.golesVinicius,        real: rex.golesVinicius,        type: 'num' },
+      { label: 'Goles en Final',      val: ex.golesEnFinal,         real: rex.golesEnFinal,         type: 'num' },
+      { label: 'Argentina semis',     val: ex.argentinaSemis,       real: rex.argentinaSemis,       type: 'str' },
+      { label: 'CR7 vs Messi',        val: ex.masGolesCR7Messi,     real: rex.masGolesCR7Messi,     type: 'str' },
+      { label: 'Más goles',           val: ex.equipoMasGoles,       real: rex.equipoMasGoles,       type: 'str' },
+      { label: 'Más goleado',         val: ex.equipoMasGoleado,     real: rex.equipoMasGoleado,     type: 'str' },
+      { label: 'Mayor goleada',       val: ex.mayorGoleada,         real: rex.mayorGoleada,         type: 'num' },
+      { label: 'España cuartos',      val: ex.españaCuartos,        real: rex.españaCuartos,        type: 'str' },
+      { label: 'CONCACAF octavos',    val: ex.concacafOctavos,      real: rex.concacafOctavos,      type: 'str' },
     ];
     let extHtml = `<div class="expand-group"><h4><i class="fa-solid fa-bolt"></i> Extras</h4>`;
     extrasRows.forEach(row => {
@@ -855,15 +859,15 @@ const AdminApp = (function () {
       `<option value="${escapeHtml(t)}" ${t === rex.equipoMasGoleado ? 'selected' : ''}>${escapeHtml(t)}</option>`
     ).join('');
 
-    function penalesBtn(val) {
-      const si  = rex.penalesEnFinal === 'si';
-      const no  = rex.penalesEnFinal === 'no';
+    function yesNoBtn(key) {
+      const si = rex[key] === 'si';
+      const no = rex[key] === 'no';
       return `
         <div class="toggle-group" style="margin-top:0">
-          <button type="button" class="toggle-btn toggle-si  ${si  ? 'selected' : ''}"
-            data-result="extra-toggle" data-key="penalesEnFinal" data-val="si">Sí</button>
-          <button type="button" class="toggle-btn toggle-no  ${no  ? 'selected' : ''}"
-            data-result="extra-toggle" data-key="penalesEnFinal" data-val="no">No</button>
+          <button type="button" class="toggle-btn toggle-si ${si ? 'selected' : ''}"
+            data-result="extra-toggle" data-key="${key}" data-val="si">Sí</button>
+          <button type="button" class="toggle-btn toggle-no ${no ? 'selected' : ''}"
+            data-result="extra-toggle" data-key="${key}" data-val="no">No</button>
         </div>`;
     }
 
@@ -913,8 +917,16 @@ const AdminApp = (function () {
             placeholder="0">
         </div>
         <div class="res-extra-row">
-          <span class="res-extra-label">¿Penales en la Final?</span>
-          <div>${penalesBtn()}</div>
+          <span class="res-extra-label">¿Argentina llega a semifinales?</span>
+          <div>${yesNoBtn('argentinaSemis')}</div>
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">¿España llega a cuartos?</span>
+          <div>${yesNoBtn('españaCuartos')}</div>
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">¿Un equipo CONCACAF en octavos?</span>
+          <div>${yesNoBtn('concacafOctavos')}</div>
         </div>
         <div class="res-extra-row">
           <span class="res-extra-label">¿Quién anota más: CR7 o Messi?</span>

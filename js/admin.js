@@ -975,7 +975,10 @@ const AdminApp = (function () {
       ${buildResSection('fa-wand-magic-sparkles', 'Extras', 'Predicciones especiales adicionales',
         extrasHtml)}
 
-      <div style="padding:8px 0 4px;text-align:right">
+      <div style="padding:8px 0 4px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <button id="btn-reset-results" class="btn-clear" style="color:var(--red)">
+          <i class="fa-solid fa-rotate-left"></i> Resetear resultados
+        </button>
         <span id="res-saved-chip" class="res-saved-chip" style="display:none">
           <i class="fa-solid fa-check"></i> Guardado
         </span>
@@ -986,6 +989,17 @@ const AdminApp = (function () {
     container.addEventListener('change', handleResultsChange);
     container.addEventListener('input',  handleResultsChange);
     container.addEventListener('click',  handleResultsClick);
+
+    document.getElementById('btn-reset-results')?.addEventListener('click', () => {
+      if (!confirm('¿Resetear todos los resultados? Esto borrará los datos ingresados y volverá la puntuación a cero.')) return;
+      localStorage.removeItem(LS_RESULTS);
+      localResults = null;
+      resultFormBuilt = false;
+      buildResultsForm();
+      resultFormBuilt = true;
+      renderAll();
+      showToast('Resultados reseteados', 'warning');
+    });
 
     // Collapsible sections
     container.querySelectorAll('.section-header[data-collapsible]').forEach(hdr => {

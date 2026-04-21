@@ -1283,3 +1283,330 @@ table.pts-table tr:nth-child(even) td { background: var(--fill-3); }
 .text-muted { color: var(--label-4); font-size: 0.78rem; }
 code { background: var(--fill-2); border: 0.5px solid var(--sep); padding: 2px 6px; border-radius: 5px; font-size: 0.82em; color: var(--label-2); }
 .mt-8 { margin-top: 8px; }
+
+/* ============================================================
+   ADMIN — TABS
+   ============================================================ */
+.admin-tabs-bar {
+  display: flex;
+  gap: 6px;
+  padding: 10px 4px 8px;
+  border-bottom: 0.5px solid var(--sep);
+  background: var(--surface);
+  border-radius: var(--radius) var(--radius) 0 0;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 20px;
+  background: var(--fill-2);
+  color: var(--label-3);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.admin-tab-btn:hover {
+  background: var(--fill);
+  color: var(--label-2);
+}
+.admin-tab-btn.active {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,122,255,0.28);
+}
+.admin-tab-btn i { font-size: 0.75rem; }
+
+.admin-tab-content { display: none; }
+.admin-tab-content.active { display: block; }
+
+/* ============================================================
+   ADMIN — PARTICIPANT CARDS (Selecciones tab)
+   ============================================================ */
+.participant-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.participant-card {
+  background: var(--surface);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: transform 0.13s, box-shadow 0.13s;
+}
+.participant-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.participant-card-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 13px;
+  border-bottom: 0.5px solid var(--sep);
+  background: var(--fill-3);
+}
+.participant-card-name {
+  flex: 1;
+  font-size: 0.87rem;
+  font-weight: 700;
+  color: var(--label);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.participant-card-pts {
+  font-size: 0.72rem;
+  color: var(--label-4);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.participant-card-body {
+  padding: 10px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.participant-picks-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.79rem;
+  padding: 5px 0;
+  border-bottom: 0.5px solid var(--sep-2);
+  gap: 8px;
+}
+.participant-picks-row:last-child { border-bottom: none; }
+
+.picks-label {
+  color: var(--label-4);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.sel-panama-row { align-items: flex-start; }
+.sel-pan-picks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.sel-pan-item {
+  font-size: 0.73rem;
+  color: var(--label-3);
+  text-align: right;
+}
+.sel-pan-item strong { color: var(--label); }
+
+/* ============================================================
+   ADMIN — RESULTS FORM (Resultados tab)
+   ============================================================ */
+
+/* Groups grid */
+.res-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 8px;
+}
+
+.res-group-card {
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.res-group-label {
+  background: var(--fill-3);
+  border-bottom: 0.5px solid var(--sep);
+  padding: 6px 11px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--label-4);
+}
+
+.res-group-picks {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.res-group-team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--label-3);
+  padding: 2px 0;
+}
+.res-group-team .fi { font-size: 0.85rem !important; border-radius: 2px; flex-shrink: 0; }
+.res-group-team-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.res-pick-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.res-pick-pos {
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: rgba(255,149,0,0.15);
+  color: #b85c00;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.res-select {
+  flex: 1;
+  padding: 6px 7px;
+  font-size: 0.76rem;
+  font-family: inherit;
+  border: 1.5px solid var(--sep);
+  border-radius: 8px;
+  background: var(--fill-2);
+  cursor: pointer;
+  color: var(--label);
+  font-weight: 500;
+  min-width: 0;
+}
+.res-select:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
+  background: var(--surface);
+}
+
+/* Terceros grid — reuse terceros-groups-grid layout */
+.res-terceros-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 4px 0 8px;
+}
+@media (max-width: 680px) {
+  .res-terceros-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+}
+@media (max-width: 360px) {
+  .res-terceros-grid { grid-template-columns: 1fr 1fr; gap: 5px; }
+}
+
+.res-tercero-chip {
+  /* extends .tercero-chip */
+  cursor: pointer;
+}
+.res-tercero-chip.dimmed {
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+/* Number input */
+.res-number-input {
+  width: 80px;
+  padding: 7px 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  border: 1.5px solid var(--sep);
+  border-radius: 9px;
+  background: var(--fill-2);
+  color: var(--label);
+  font-family: inherit;
+  -moz-appearance: textfield;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+.res-number-input::-webkit-outer-spin-button,
+.res-number-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.res-number-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3.5px rgba(0,122,255,0.14);
+  background: var(--surface);
+}
+
+/* Extras grid */
+.res-extras-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.res-extra-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--sep-2);
+}
+.res-extra-row:last-child { border-bottom: none; }
+
+.res-extra-label {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--label-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.res-extra-select {
+  max-width: 180px;
+  flex-shrink: 0;
+}
+
+/* Saved chip */
+@keyframes savedFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.res-saved-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  background: rgba(52,199,89,0.12);
+  color: var(--green);
+  border-radius: 20px;
+  font-size: 0.77rem;
+  font-weight: 700;
+  transition: opacity 0.4s;
+  animation: savedFadeIn 0.2s ease;
+}
+.res-saved-chip i { font-size: 0.72rem; }
+
+@media (max-width: 640px) {
+  .admin-tabs-bar { padding: 8px 2px 6px; }
+  .admin-tab-btn  { padding: 7px 13px; font-size: 0.77rem; }
+  .participant-cards-grid { grid-template-columns: 1fr; }
+  .res-groups-grid { grid-template-columns: repeat(2, 1fr); }
+  .res-extra-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .res-extra-select { max-width: 100%; width: 100%; }
+  .res-number-input { width: 100%; }
+}

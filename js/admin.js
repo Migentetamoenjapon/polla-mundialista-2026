@@ -4,11 +4,31 @@
 
 const AdminApp = (function () {
 
-  const LS_CACHE = 'polla2026_admin_cache';
+  const LS_CACHE   = 'polla2026_admin_cache';
+  const LS_RESULTS = 'polla2026_results';
 
-  let participants = [];
-  let sortKey = 'rank';
-  let sortDir = 'asc';
+  let participants  = [];
+  let sortKey       = 'rank';
+  let sortDir       = 'asc';
+  let localResults  = null;
+  let resultFormBuilt = false;
+
+  // ─── Results localStorage ────────────────────────────────
+  function loadLocalResults() {
+    try {
+      const raw = localStorage.getItem(LS_RESULTS);
+      if (raw) localResults = JSON.parse(raw);
+    } catch (e) { console.error('Error cargando resultados', e); }
+  }
+
+  function saveLocalResults() {
+    try { localStorage.setItem(LS_RESULTS, JSON.stringify(localResults)); }
+    catch (e) { /* quota */ }
+  }
+
+  function getResults() {
+    return localResults || WC2026.RESULTS;
+  }
 
   // ─── Login ────────────────────────────────────────────────
   function initLogin() {
@@ -35,6 +55,34 @@ const AdminApp = (function () {
       input.classList.remove('error');
       errMsg.classList.remove('visible');
     });
+  }
+
+  // ─── Tabs ─────────────────────────────────────────────────
+  function initTabs() {
+    const bar = document.querySelector('.admin-tabs-bar');
+    if (!bar) return;
+    bar.addEventListener('click', (e) => {
+      const btn = e.target.closest('.admin-tab-btn');
+      if (!btn) return;
+      switchTab(btn.dataset.tab);
+    });
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.admin-tab-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === tabId);
+    });
+    document.querySelectorAll('.admin-tab-content').forEach(c => {
+      c.classList.toggle('active', c.id === `tab-${tabId}`);
+    });
+
+    if (tabId === 'selecciones') {
+      renderSeleccionesTab();
+    }
+    if (tabId === 'resultados' && !resultFormBuilt) {
+      buildResultsForm();
+      resultFormBuilt = true;
+    }
   }
 
   // ─── Caché ────────────────────────────────────────────────
@@ -140,14 +188,13 @@ const AdminApp = (function () {
     if (!obj || typeof obj !== 'object') return false;
     if (!obj.nombre || !obj.timestamp || !obj.predicciones) return false;
     const pred = obj.predicciones;
-    // Requerir solo grupos y panama — knockout fue eliminado
     if (!pred.grupos || !pred.panama) return false;
     return true;
   }
 
   // ─── Puntuación ───────────────────────────────────────────
   function scoreParticipant(pred) {
-    const results = WC2026.RESULTS;
+    const results = getResults();
     const s = WC2026.scoring;
     const breakdown = {
       grupos: 0, terceros: 0,
@@ -157,7 +204,7 @@ const AdminApp = (function () {
 
     if (!results) return { total: 0, breakdown };
 
-    // Grupos — 3 pts solo si la posición es exacta
+    // Grupos
     Object.keys(WC2026.groups).forEach(grpId => {
       const u = pred.grupos?.[grpId];
       const r = results.grupos?.[grpId];
@@ -177,7 +224,7 @@ const AdminApp = (function () {
     if (pred.campeon    && pred.campeon    === results.campeon)    breakdown.campeon    = s.campeon;
     if (pred.subcampeon && pred.subcampeon === results.subcampeon) breakdown.subcampeon = s.subcampeon;
 
-    // Bota de Oro (goleador)
+    // Bota de Oro
     if (pred.goleador && results.goleador &&
         pred.goleador.trim().toLowerCase() === results.goleador.trim().toLowerCase())
       breakdown.goleador = s.goleador;
@@ -187,7 +234,7 @@ const AdminApp = (function () {
         pred.balonDeOro.trim().toLowerCase() === results.balonDeOro.trim().toLowerCase())
       breakdown.balonDeOro = s.balonDeOro;
 
-    // Panamá — resultado: 3 pts · marcador exacto: +3 pts adicionales
+    // Panamá
     WC2026.panamaMatches.forEach(m => {
       const u = pred.panama?.[m.key];
       const r = results.panama?.[m.key];
@@ -196,15 +243,15 @@ const AdminApp = (function () {
       const rP = parseInt(r.golesPanama), rR = parseInt(r.golesRival);
       if (isNaN(uP) || isNaN(uR) || isNaN(rP) || isNaN(rR)) return;
       if (uP === rP && uR === rR) {
-        breakdown.panama += s.panamaResultado + s.panamaExacto; // 6 pts
+        breakdown.panama += s.panamaResultado + s.panamaExacto;
       } else {
         const uRes = uP > uR ? 'W' : uP < uR ? 'L' : 'D';
         const rRes = rP > rR ? 'W' : rP < rR ? 'L' : 'D';
-        if (uRes === rRes) breakdown.panama += s.panamaResultado; // 3 pts
+        if (uRes === rRes) breakdown.panama += s.panamaResultado;
       }
     });
 
-    // Partidos especiales — mismo esquema que Panamá
+    // Partidos especiales
     if (WC2026.specialMatches && results.specials) {
       WC2026.specialMatches.forEach(m => {
         const u = pred.specials?.[m.key];
@@ -214,16 +261,16 @@ const AdminApp = (function () {
         const r1 = parseInt(r.golesTeam1), r2 = parseInt(r.golesTeam2);
         if (isNaN(u1) || isNaN(u2) || isNaN(r1) || isNaN(r2)) return;
         if (u1 === r1 && u2 === r2) {
-          breakdown.specials += s.specialResultado + s.specialExacto; // 6 pts
+          breakdown.specials += s.specialResultado + s.specialExacto;
         } else {
           const uRes = u1 > u2 ? 'W' : u1 < u2 ? 'L' : 'D';
           const rRes = r1 > r2 ? 'W' : r1 < r2 ? 'L' : 'D';
-          if (uRes === rRes) breakdown.specials += s.specialResultado; // 3 pts
+          if (uRes === rRes) breakdown.specials += s.specialResultado;
         }
       });
     }
 
-    // Extras — 3 pts cada uno
+    // Extras
     const ex  = pred.extras || {};
     const rex = results.extras || {};
     if (Object.keys(rex).length) {
@@ -245,17 +292,20 @@ const AdminApp = (function () {
     return { total, breakdown };
   }
 
-  // ─── Render tabla ─────────────────────────────────────────
+  // ─── Render All ───────────────────────────────────────────
   function renderAll() {
     updateStats();
     renderTable();
+    // Refresh selecciones tab if it's visible
+    const selTab = document.getElementById('tab-selecciones');
+    if (selTab && selTab.classList.contains('active')) renderSeleccionesTab();
   }
 
   function updateStats() {
     const el = document.getElementById('stat-count');
     if (el) el.textContent = participants.length;
     const banner = document.getElementById('no-results-banner');
-    if (banner) banner.style.display = WC2026.RESULTS ? 'none' : 'flex';
+    if (banner) banner.style.display = getResults() ? 'none' : 'flex';
   }
 
   function renderTable() {
@@ -279,18 +329,17 @@ const AdminApp = (function () {
 
     scored.sort((a, b) => {
       let va, vb;
-      if (sortKey === 'nombre')  { va = a.nombre;               vb = b.nombre; }
-      else if (sortKey === 'grupos')  { va = a.score.breakdown.grupos;  vb = b.score.breakdown.grupos; }
-      else if (sortKey === 'panama')  { va = a.score.breakdown.panama;  vb = b.score.breakdown.panama; }
+      if (sortKey === 'nombre')       { va = a.nombre;                    vb = b.nombre; }
+      else if (sortKey === 'grupos')  { va = a.score.breakdown.grupos;    vb = b.score.breakdown.grupos; }
+      else if (sortKey === 'panama')  { va = a.score.breakdown.panama;    vb = b.score.breakdown.panama; }
       else if (sortKey === 'campeon') { va = a.predicciones.campeon || ''; vb = b.predicciones.campeon || ''; }
-      else { va = a.score.total; vb = b.score.total; } // rank & total
+      else { va = a.score.total; vb = b.score.total; }
 
       if (typeof va === 'string')
         return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
       return sortDir === 'asc' ? va - vb : vb - va;
     });
 
-    // Rank por total desc (ties comparten posición)
     const byTotal = [...scored].sort((a, b) => b.score.total - a.score.total);
     const rankMap = {};
     byTotal.forEach((p, i) => {
@@ -376,7 +425,7 @@ const AdminApp = (function () {
 
   function buildExpandContent(p) {
     const pred    = p.predicciones;
-    const results = WC2026.RESULTS;
+    const results = getResults();
     const score   = scoreParticipant(pred);
 
     function statusClass(predicted, actual) {
@@ -394,7 +443,7 @@ const AdminApp = (function () {
       return Number(predicted) === Number(actual) ? 'pick-correct' : 'pick-wrong';
     }
 
-    // ── Grupos ────────────────────────────────────────────────
+    // Grupos
     let gruposHtml = `<div class="expand-group"><h4><i class="fa-solid fa-layer-group"></i> Fase de Grupos</h4>`;
     Object.keys(WC2026.groups).forEach(grpId => {
       const g = pred.grupos?.[grpId];
@@ -411,7 +460,7 @@ const AdminApp = (function () {
     });
     gruposHtml += `</div>`;
 
-    // ── Terceros ──────────────────────────────────────────────
+    // Terceros
     let tercerosHtml = `<div class="expand-group"><h4><i class="fa-solid fa-medal"></i> Mejores Terceros</h4>`;
     (pred.mejoresTerceros || []).forEach(team => {
       const ok = results?.mejoresTerceros?.includes(team);
@@ -422,7 +471,7 @@ const AdminApp = (function () {
     });
     tercerosHtml += `</div>`;
 
-    // ── Panamá ────────────────────────────────────────────────
+    // Panamá
     let panamaHtml = `<div class="expand-group"><h4>${flagSpan('Panamá')} Especial Panamá</h4>`;
     WC2026.panamaMatches.forEach(m => {
       const u = pred.panama?.[m.key];
@@ -441,7 +490,7 @@ const AdminApp = (function () {
     });
     panamaHtml += `</div>`;
 
-    // ── Partidos Destacados ────────────────────────────────────
+    // Partidos Destacados
     let specialsHtml = `<div class="expand-group"><h4><i class="fa-solid fa-star"></i> Partidos Destacados</h4>`;
     WC2026.specialMatches.forEach(m => {
       const u = pred.specials?.[m.key];
@@ -460,7 +509,7 @@ const AdminApp = (function () {
     });
     specialsHtml += `</div>`;
 
-    // ── Predicciones Especiales ───────────────────────────────
+    // Predicciones Especiales
     let espHtml = `<div class="expand-group"><h4><i class="fa-solid fa-trophy"></i> Predicciones Especiales</h4>
       <div class="pick-item"><span>Campeón</span>
         <span class="${statusClass(pred.campeon, results?.campeon)}">${pred.campeon ? teamWithFlag(pred.campeon) : '—'}</span>
@@ -476,7 +525,7 @@ const AdminApp = (function () {
       </div>
     </div>`;
 
-    // ── Extras ────────────────────────────────────────────────
+    // Extras
     const ex  = pred.extras  || {};
     const rex = results?.extras || {};
     const extrasRows = [
@@ -501,7 +550,7 @@ const AdminApp = (function () {
     });
     extHtml += `</div>`;
 
-    // ── Desglose de Puntos ────────────────────────────────────
+    // Desglose
     const bk = score.breakdown;
     const bkRows = [
       ['Grupos',       bk.grupos],
@@ -528,6 +577,631 @@ const AdminApp = (function () {
     return `<div class="expand-content">
       ${gruposHtml}${tercerosHtml}${panamaHtml}${specialsHtml}${espHtml}${extHtml}${ptsHtml}
     </div>`;
+  }
+
+  // ─── Tab: Selecciones ─────────────────────────────────────
+  function renderSeleccionesTab() {
+    const container = document.getElementById('selecciones-container');
+    if (!container) return;
+
+    if (participants.length === 0) {
+      container.innerHTML = `
+        <section class="form-section">
+          <div class="section-body">
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fa-solid fa-users"></i></div>
+              <p>Ningún participante cargado todavía.</p>
+              <p>Ve a la pestaña <strong>Ranking</strong> y sube los archivos JSON.</p>
+            </div>
+          </div>
+        </section>`;
+      return;
+    }
+
+    // Score and rank participants
+    const scored = participants.map(p => ({
+      ...p,
+      score: scoreParticipant(p.predicciones),
+    })).sort((a, b) => b.score.total - a.score.total);
+
+    // Assign ranks
+    scored.forEach((p, i) => {
+      const prev = i > 0 ? scored[i - 1].score.total : null;
+      p._rank = (prev !== null && prev === p.score.total) ? scored[i - 1]._rank : i + 1;
+    });
+
+    let cardsHtml = scored.map(p => {
+      const pred = p.predicciones;
+      const rank = p._rank;
+      const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+
+      // Panama picks
+      const panPicks = WC2026.panamaMatches.map(m => {
+        const u = pred.panama?.[m.key];
+        const score = (u?.golesPanama !== '' && u?.golesPanama !== undefined && u?.golesRival !== undefined)
+          ? `${u.golesPanama}–${u.golesRival}` : '?–?';
+        return `<span class="sel-pan-item">vs ${escapeHtml(m.rival)}: <strong>${score}</strong></span>`;
+      }).join('');
+
+      const champHtml = pred.campeon ? teamWithFlag(pred.campeon) : '<span style="color:var(--label-4)">—</span>';
+      const subHtml   = pred.subcampeon ? teamWithFlag(pred.subcampeon) : '<span style="color:var(--label-4)">—</span>';
+      const goleHtml  = pred.goleador ? escapeHtml(pred.goleador) : '—';
+
+      return `
+        <div class="participant-card">
+          <div class="participant-card-header">
+            <span class="rank-badge ${rankClass}">${rank}</span>
+            <span class="participant-card-name">${escapeHtml(p.nombre)}</span>
+            <span class="participant-card-pts"><span class="pts-badge">${p.score.total}</span> pts</span>
+          </div>
+          <div class="participant-card-body">
+            <div class="participant-picks-row">
+              <span class="picks-label">Campeón</span>
+              <span>${champHtml}</span>
+            </div>
+            <div class="participant-picks-row">
+              <span class="picks-label">Subcampeón</span>
+              <span>${subHtml}</span>
+            </div>
+            <div class="participant-picks-row">
+              <span class="picks-label">Bota de Oro</span>
+              <span style="font-weight:600">${goleHtml}</span>
+            </div>
+            <div class="participant-picks-row sel-panama-row">
+              <span class="picks-label" style="flex-shrink:0">Panamá</span>
+              <span class="sel-pan-picks">${panPicks}</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = `
+      <section class="form-section">
+        <div class="section-header">
+          <span class="section-icon"><i class="fa-solid fa-users"></i></span>
+          <div class="section-header-text">
+            <h2>Selecciones de Participantes</h2>
+            <div class="section-sub">${scored.length} participante(s) · ordenados por puntuación</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="participant-cards-grid">${cardsHtml}</div>
+        </div>
+      </section>`;
+  }
+
+  // ─── Tab: Resultados — Form Build ────────────────────────
+  function buildResultsForm() {
+    const container = document.getElementById('resultados-container');
+    if (!container) return;
+
+    // Ensure localResults has a full skeleton
+    if (!localResults) localResults = {};
+    ensureResultsSkeleton();
+
+    const allTeams = getAllTeams();
+
+    // ── Grupos section ──────────────────────────────────────
+    let gruposHtml = '';
+    Object.keys(WC2026.groups).forEach(grpId => {
+      const teams = WC2026.groups[grpId].teams;
+      const rGrp  = localResults.grupos[grpId] || {};
+      const optsPrimero = teams.map(t =>
+        `<option value="${escapeHtml(t)}" ${rGrp.primero === t ? 'selected' : ''}>${escapeHtml(t)}</option>`
+      ).join('');
+      const optsSeg = teams.map(t =>
+        `<option value="${escapeHtml(t)}" ${rGrp.segundo === t ? 'selected' : ''}>${escapeHtml(t)}</option>`
+      ).join('');
+
+      gruposHtml += `
+        <div class="res-group-card">
+          <div class="res-group-label">Grupo ${grpId}</div>
+          <div class="res-group-picks">
+            ${teams.map(t => `
+              <div class="res-group-team">
+                <span class="fi fi-${WC2026.countryCodes?.[t] || 'un'}" style="border-radius:2px"></span>
+                <span class="res-group-team-name">${escapeHtml(t)}</span>
+              </div>`).join('')}
+            <div class="res-pick-row">
+              <span class="res-pick-pos">1°</span>
+              <select class="res-select" data-result="grupo" data-group="${grpId}" data-pos="primero">
+                <option value="">— selecciona —</option>
+                ${optsPrimero}
+              </select>
+            </div>
+            <div class="res-pick-row">
+              <span class="res-pick-pos" style="background:rgba(120,120,128,0.18);color:var(--label-3)">2°</span>
+              <select class="res-select" data-result="grupo" data-group="${grpId}" data-pos="segundo">
+                <option value="">— selecciona —</option>
+                ${optsSeg}
+              </select>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    // ── Terceros section ────────────────────────────────────
+    // Collect all teams that ARE 1° or 2° in localResults to dim them
+    const terceroSelected = localResults.mejoresTerceros || [];
+    let tercerosHtml = buildTercerosHtml(terceroSelected);
+
+    // ── Panamá matches ──────────────────────────────────────
+    let panamaHtml = '';
+    WC2026.panamaMatches.forEach(m => {
+      const rPan = localResults.panama?.[m.key] || {};
+      panamaHtml += `
+        <div class="panama-match-card">
+          <div class="panama-match-header">
+            <span class="fi fi-pa"></span>
+            Panamá vs ${escapeHtml(m.rival)}
+            <span class="fi fi-${WC2026.countryCodes?.[m.rival] || 'un'}"></span>
+          </div>
+          <div class="panama-score">
+            <div class="panama-team">
+              <div class="panama-flag-big"><span class="fi fi-pa"></span></div>
+              <div class="panama-team-name">Panamá</div>
+            </div>
+            <input type="number" class="score-input" min="0" max="30" placeholder="–"
+              data-result="panama" data-key="${m.key}" data-side="golesPanama"
+              value="${rPan.golesPanama !== undefined ? rPan.golesPanama : ''}">
+            <span class="score-dash">–</span>
+            <input type="number" class="score-input" min="0" max="30" placeholder="–"
+              data-result="panama" data-key="${m.key}" data-side="golesRival"
+              value="${rPan.golesRival !== undefined ? rPan.golesRival : ''}">
+            <div class="panama-team">
+              <div class="panama-flag-big"><span class="fi fi-${WC2026.countryCodes?.[m.rival] || 'un'}"></span></div>
+              <div class="panama-team-name">${escapeHtml(m.rival)}</div>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    // ── Special matches ─────────────────────────────────────
+    let specialsHtml = '';
+    WC2026.specialMatches.forEach(m => {
+      const rSp = localResults.specials?.[m.key] || {};
+      const badgeHtml = m.badge ? `<span class="special-badge">${escapeHtml(m.badge)}</span>` : '';
+      specialsHtml += `
+        <div class="panama-match-card special-match-card">
+          <div class="panama-match-header">
+            <span class="fi fi-${WC2026.countryCodes?.[m.team1] || 'un'}"></span>
+            ${escapeHtml(m.team1)} vs ${escapeHtml(m.team2)}
+            <span class="fi fi-${WC2026.countryCodes?.[m.team2] || 'un'}"></span>
+            ${badgeHtml}
+          </div>
+          <div class="panama-score">
+            <div class="panama-team">
+              <div class="panama-flag-big"><span class="fi fi-${WC2026.countryCodes?.[m.team1] || 'un'}"></span></div>
+              <div class="panama-team-name">${escapeHtml(m.team1)}</div>
+            </div>
+            <input type="number" class="score-input special-score" min="0" max="30" placeholder="–"
+              data-result="special" data-key="${m.key}" data-side="golesTeam1"
+              value="${rSp.golesTeam1 !== undefined ? rSp.golesTeam1 : ''}">
+            <span class="score-dash">–</span>
+            <input type="number" class="score-input special-score" min="0" max="30" placeholder="–"
+              data-result="special" data-key="${m.key}" data-side="golesTeam2"
+              value="${rSp.golesTeam2 !== undefined ? rSp.golesTeam2 : ''}">
+            <div class="panama-team">
+              <div class="panama-flag-big"><span class="fi fi-${WC2026.countryCodes?.[m.team2] || 'un'}"></span></div>
+              <div class="panama-team-name">${escapeHtml(m.team2)}</div>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    // ── Predicciones Especiales ─────────────────────────────
+    const rCamp  = localResults.campeon    || '';
+    const rSub   = localResults.subcampeon || '';
+    const rGol   = localResults.goleador   || '';
+    const rBalon = localResults.balonDeOro || '';
+
+    const teamOpts = ['', ...allTeams].map(t =>
+      `<option value="${escapeHtml(t)}" ${(t && (t === rCamp || t === rSub)) ? '' : ''}>${t ? escapeHtml(t) : '— selecciona —'}</option>`
+    );
+    const campOpts   = allTeams.map(t => `<option value="${escapeHtml(t)}" ${t === rCamp  ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('');
+    const subOpts    = allTeams.map(t => `<option value="${escapeHtml(t)}" ${t === rSub   ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('');
+    const golOpts    = WC2026.goleadores.map(g  => `<option value="${escapeHtml(g)}"  ${g === rGol   ? 'selected' : ''}>${escapeHtml(g)}</option>`).join('');
+    const balonOpts  = WC2026.balonDeOroCandidates.map(g => `<option value="${escapeHtml(g)}" ${g === rBalon ? 'selected' : ''}>${escapeHtml(g)}</option>`).join('');
+
+    let predEspHtml = `
+      <div class="pred-grid-4">
+        <div class="pred-card">
+          <div class="pred-card-icon"><i class="fa-solid fa-trophy" style="color:var(--orange)"></i></div>
+          <div class="pred-card-title">Campeón</div>
+          <div class="pred-card-sub">Ganador del Mundial</div>
+          <select class="special-select" data-result="campeon">
+            <option value="">— selecciona —</option>
+            ${campOpts}
+          </select>
+        </div>
+        <div class="pred-card">
+          <div class="pred-card-icon"><i class="fa-solid fa-medal" style="color:var(--label-3)"></i></div>
+          <div class="pred-card-title">Subcampeón</div>
+          <div class="pred-card-sub">Finalista perdedor</div>
+          <select class="special-select" data-result="subcampeon">
+            <option value="">— selecciona —</option>
+            ${subOpts}
+          </select>
+        </div>
+        <div class="pred-card">
+          <div class="pred-card-icon"><i class="fa-solid fa-shoe-prints" style="color:var(--green)"></i></div>
+          <div class="pred-card-title">Bota de Oro</div>
+          <div class="pred-card-sub">Máximo goleador</div>
+          <select class="special-select" data-result="goleador">
+            <option value="">— selecciona —</option>
+            ${golOpts}
+          </select>
+        </div>
+        <div class="pred-card">
+          <div class="pred-card-icon"><i class="fa-solid fa-futbol" style="color:var(--blue)"></i></div>
+          <div class="pred-card-title">Balón de Oro</div>
+          <div class="pred-card-sub">Mejor jugador</div>
+          <select class="special-select" data-result="balonDeOro">
+            <option value="">— selecciona —</option>
+            ${balonOpts}
+          </select>
+        </div>
+      </div>`;
+
+    // ── Extras ──────────────────────────────────────────────
+    const rex = localResults.extras || {};
+    const panamaPlayerOpts = WC2026.panamaPlayers.map(pl =>
+      `<option value="${escapeHtml(pl)}" ${pl === rex.primerGoleadorPanama ? 'selected' : ''}>${escapeHtml(pl)}</option>`
+    ).join('');
+    const equipoMasGolesOpts = allTeams.map(t =>
+      `<option value="${escapeHtml(t)}" ${t === rex.equipoMasGoles ? 'selected' : ''}>${escapeHtml(t)}</option>`
+    ).join('');
+    const equipoMasGoleadoOpts = allTeams.map(t =>
+      `<option value="${escapeHtml(t)}" ${t === rex.equipoMasGoleado ? 'selected' : ''}>${escapeHtml(t)}</option>`
+    ).join('');
+
+    function penalesBtn(val) {
+      const si  = rex.penalesEnFinal === 'si';
+      const no  = rex.penalesEnFinal === 'no';
+      return `
+        <div class="toggle-group" style="margin-top:0">
+          <button type="button" class="toggle-btn toggle-si  ${si  ? 'selected' : ''}"
+            data-result="extra-toggle" data-key="penalesEnFinal" data-val="si">Sí</button>
+          <button type="button" class="toggle-btn toggle-no  ${no  ? 'selected' : ''}"
+            data-result="extra-toggle" data-key="penalesEnFinal" data-val="no">No</button>
+        </div>`;
+    }
+
+    function cr7MessiBtn() {
+      const cr7   = rex.masGolesCR7Messi === 'cr7';
+      const igual = rex.masGolesCR7Messi === 'igual';
+      const messi = rex.masGolesCR7Messi === 'messi';
+      return `
+        <div class="toggle-group" style="margin-top:0">
+          <button type="button" class="toggle-btn toggle-cr7   ${cr7   ? 'selected' : ''}"
+            data-result="extra-toggle" data-key="masGolesCR7Messi" data-val="cr7">CR7</button>
+          <button type="button" class="toggle-btn toggle-igual ${igual ? 'selected' : ''}"
+            data-result="extra-toggle" data-key="masGolesCR7Messi" data-val="igual">Igual</button>
+          <button type="button" class="toggle-btn toggle-messi ${messi ? 'selected' : ''}"
+            data-result="extra-toggle" data-key="masGolesCR7Messi" data-val="messi">Messi</button>
+        </div>`;
+    }
+
+    let extrasHtml = `
+      <div class="res-extras-grid">
+        <div class="res-extra-row">
+          <span class="res-extra-label">1er Goleador de Panamá</span>
+          <select class="special-select res-extra-select" data-result="extra" data-key="primerGoleadorPanama">
+            <option value="">— selecciona —</option>
+            ${panamaPlayerOpts}
+          </select>
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">Goles de Yamal</span>
+          <input type="number" class="res-number-input" min="0" max="30"
+            data-result="extra" data-key="golesYamal"
+            value="${rex.golesYamal !== undefined && rex.golesYamal !== null ? rex.golesYamal : ''}"
+            placeholder="0">
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">Goles de Vinicius</span>
+          <input type="number" class="res-number-input" min="0" max="30"
+            data-result="extra" data-key="golesVinicius"
+            value="${rex.golesVinicius !== undefined && rex.golesVinicius !== null ? rex.golesVinicius : ''}"
+            placeholder="0">
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">Goles en la Final</span>
+          <input type="number" class="res-number-input" min="0" max="30"
+            data-result="extra" data-key="golesEnFinal"
+            value="${rex.golesEnFinal !== undefined && rex.golesEnFinal !== null ? rex.golesEnFinal : ''}"
+            placeholder="0">
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">¿Penales en la Final?</span>
+          <div>${penalesBtn()}</div>
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">¿Quién anota más: CR7 o Messi?</span>
+          <div>${cr7MessiBtn()}</div>
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">Equipo con más goles</span>
+          <select class="special-select res-extra-select" data-result="extra" data-key="equipoMasGoles">
+            <option value="">— selecciona —</option>
+            ${equipoMasGolesOpts}
+          </select>
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">Equipo más goleado</span>
+          <select class="special-select res-extra-select" data-result="extra" data-key="equipoMasGoleado">
+            <option value="">— selecciona —</option>
+            ${equipoMasGoleadoOpts}
+          </select>
+        </div>
+        <div class="res-extra-row">
+          <span class="res-extra-label">Mayor goleada (diferencia)</span>
+          <input type="number" class="res-number-input" min="1" max="20"
+            data-result="extra" data-key="mayorGoleada"
+            value="${rex.mayorGoleada !== undefined && rex.mayorGoleada !== null ? rex.mayorGoleada : ''}"
+            placeholder="0">
+        </div>
+      </div>`;
+
+    // ── Full form render ─────────────────────────────────────
+    container.innerHTML = `
+      ${buildResSection('fa-layer-group', 'Fase de Grupos', 'Primero y segundo de cada grupo',
+        `<div class="res-groups-grid">${gruposHtml}</div>`)}
+
+      ${buildResSection('fa-medal', 'Mejores Terceros', 'Selecciona los 8 equipos que pasan como mejores terceros',
+        `<div id="res-terceros-wrap">${tercerosHtml}</div>`)}
+
+      ${buildResSection('fi fi-pa', 'Especial Panamá', 'Marcadores reales de los partidos de Panamá',
+        `<div class="panama-matches">${panamaHtml}</div>`, true)}
+
+      ${buildResSection('fa-star', 'Partidos Destacados', 'Marcadores reales de los partidos especiales',
+        `<div class="panama-matches">${specialsHtml}</div>`)}
+
+      ${buildResSection('fa-trophy', 'Predicciones Especiales', 'Campeón, subcampeón, goleador y balón de oro',
+        predEspHtml)}
+
+      ${buildResSection('fa-wand-magic-sparkles', 'Extras', 'Predicciones especiales adicionales',
+        extrasHtml)}
+
+      <div style="padding:8px 0 4px;text-align:right">
+        <span id="res-saved-chip" class="res-saved-chip" style="display:none">
+          <i class="fa-solid fa-check"></i> Guardado
+        </span>
+      </div>
+    `;
+
+    // Attach event listeners
+    container.addEventListener('change', handleResultsChange);
+    container.addEventListener('input',  handleResultsChange);
+    container.addEventListener('click',  handleResultsClick);
+
+    // Collapsible sections
+    container.querySelectorAll('.section-header[data-collapsible]').forEach(hdr => {
+      hdr.addEventListener('click', () => {
+        const body    = hdr.nextElementSibling;
+        const chevron = hdr.querySelector('.section-chevron');
+        body.classList.toggle('is-collapsed');
+        if (chevron) chevron.classList.toggle('chevron-closed');
+      });
+    });
+  }
+
+  function buildResSection(iconClass, title, sub, bodyHtml, isFlagIcon = false) {
+    const iconHtml = isFlagIcon
+      ? `<span class="section-icon"><span class="fi ${iconClass}" style="font-size:1.1rem"></span></span>`
+      : `<span class="section-icon"><i class="fa-solid ${iconClass}"></i></span>`;
+    return `
+      <section class="form-section">
+        <div class="section-header" data-collapsible>
+          ${iconHtml}
+          <div class="section-header-text">
+            <h2>${escapeHtml(title)}</h2>
+            <div class="section-sub">${escapeHtml(sub)}</div>
+          </div>
+          <i class="fa-solid fa-chevron-down section-chevron"></i>
+        </div>
+        <div class="section-body">
+          ${bodyHtml}
+        </div>
+      </section>`;
+  }
+
+  function buildTercerosHtml(selected) {
+    // Get teams already picked as 1° or 2° in groups results
+    const dimmed = new Set();
+    if (localResults && localResults.grupos) {
+      Object.values(localResults.grupos).forEach(g => {
+        if (g.primero) dimmed.add(g.primero);
+        if (g.segundo) dimmed.add(g.segundo);
+      });
+    }
+
+    const count = selected.length;
+    const counterClass = count === 8 ? 'complete' : count > 8 ? 'over' : '';
+
+    let html = `
+      <div class="terceros-info">
+        Selecciona exactamente 8 equipos que pasen como mejores terceros.
+        <span class="terceros-counter ${counterClass}" style="margin-left:6px">
+          ${count}/8 seleccionados
+        </span>
+      </div>
+      <div class="res-terceros-grid">`;
+
+    // Group chips by group
+    Object.keys(WC2026.groups).forEach(grpId => {
+      const teams = WC2026.groups[grpId].teams;
+      html += `
+        <div class="tercero-group-card">
+          <div class="tercero-group-header">
+            <div class="tercero-group-label">Grupo ${grpId}</div>
+          </div>
+          <div class="tercero-team-list">`;
+      teams.forEach(team => {
+        const isSel    = selected.includes(team);
+        const isDimmed = dimmed.has(team) && !isSel;
+        html += `
+            <button type="button"
+              class="tercero-chip res-tercero-chip ${isSel ? 'selected' : ''} ${isDimmed ? 'dimmed' : ''}"
+              data-result="tercero" data-team="${escapeHtml(team)}">
+              <span class="tercero-chip-flag"><span class="fi fi-${WC2026.countryCodes?.[team] || 'un'}"></span></span>
+              <span class="tercero-chip-name">${escapeHtml(team)}</span>
+              ${isSel ? '<i class="fa-solid fa-check tercero-chip-check"></i>' : ''}
+            </button>`;
+      });
+      html += `</div></div>`;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  // ─── Results form event handlers ─────────────────────────
+  function handleResultsChange(e) {
+    const el = e.target;
+    const type = el.dataset.result;
+    if (!type) return;
+
+    // Ignore toggle buttons (handled by click)
+    if (type === 'extra-toggle') return;
+
+    ensureResultsSkeleton();
+
+    if (type === 'grupo') {
+      const grp = el.dataset.group;
+      const pos = el.dataset.pos; // "primero" | "segundo"
+      if (!localResults.grupos[grp]) localResults.grupos[grp] = {};
+      localResults.grupos[grp][pos] = el.value || null;
+
+      // Refresh terceros to update dimmed state
+      const wrap = document.getElementById('res-terceros-wrap');
+      if (wrap) wrap.innerHTML = buildTercerosHtml(localResults.mejoresTerceros || []);
+
+    } else if (type === 'panama') {
+      const key  = el.dataset.key;
+      const side = el.dataset.side;
+      if (!localResults.panama[key]) localResults.panama[key] = {};
+      localResults.panama[key][side] = el.value !== '' ? parseInt(el.value) : null;
+
+    } else if (type === 'special') {
+      const key  = el.dataset.key;
+      const side = el.dataset.side;
+      if (!localResults.specials[key]) localResults.specials[key] = {};
+      localResults.specials[key][side] = el.value !== '' ? parseInt(el.value) : null;
+
+    } else if (type === 'campeon') {
+      localResults.campeon = el.value || null;
+    } else if (type === 'subcampeon') {
+      localResults.subcampeon = el.value || null;
+    } else if (type === 'goleador') {
+      localResults.goleador = el.value || null;
+    } else if (type === 'balonDeOro') {
+      localResults.balonDeOro = el.value || null;
+    } else if (type === 'extra') {
+      const key = el.dataset.key;
+      const numKeys = ['golesYamal', 'golesVinicius', 'golesEnFinal', 'mayorGoleada'];
+      if (numKeys.includes(key)) {
+        localResults.extras[key] = el.value !== '' ? parseInt(el.value) : null;
+      } else {
+        localResults.extras[key] = el.value || null;
+      }
+    }
+
+    saveLocalResults();
+    renderAll();
+    showSavedChip();
+  }
+
+  function handleResultsClick(e) {
+    // Toggle buttons
+    const toggleBtn = e.target.closest('[data-result="extra-toggle"]');
+    if (toggleBtn) {
+      const key = toggleBtn.dataset.key;
+      const val = toggleBtn.dataset.val;
+      ensureResultsSkeleton();
+      localResults.extras[key] = val;
+
+      // Update button states within the same group
+      const group = toggleBtn.closest('.toggle-group');
+      if (group) {
+        group.querySelectorAll('.toggle-btn').forEach(b => {
+          b.classList.toggle('selected', b.dataset.val === val);
+        });
+      }
+
+      saveLocalResults();
+      renderAll();
+      showSavedChip();
+      return;
+    }
+
+    // Tercero chips
+    const chip = e.target.closest('.res-tercero-chip');
+    if (chip) {
+      const team = chip.dataset.team;
+      if (!team) return;
+      ensureResultsSkeleton();
+      const arr = localResults.mejoresTerceros;
+      const idx = arr.indexOf(team);
+      if (idx >= 0) {
+        arr.splice(idx, 1);
+      } else {
+        if (arr.length >= 8) {
+          showToast('Ya seleccionaste 8 equipos terceros', 'warning');
+          return;
+        }
+        arr.push(team);
+      }
+
+      // Re-render terceros section only
+      const wrap = document.getElementById('res-terceros-wrap');
+      if (wrap) wrap.innerHTML = buildTercerosHtml(arr);
+
+      saveLocalResults();
+      renderAll();
+      showSavedChip();
+    }
+  }
+
+  function ensureResultsSkeleton() {
+    if (!localResults) localResults = {};
+    if (!localResults.grupos) {
+      localResults.grupos = {};
+      Object.keys(WC2026.groups).forEach(g => { localResults.grupos[g] = {}; });
+    }
+    if (!localResults.mejoresTerceros) localResults.mejoresTerceros = [];
+    if (!localResults.panama) {
+      localResults.panama = {};
+      WC2026.panamaMatches.forEach(m => { localResults.panama[m.key] = {}; });
+    }
+    if (!localResults.specials) {
+      localResults.specials = {};
+      WC2026.specialMatches.forEach(m => { localResults.specials[m.key] = {}; });
+    }
+    if (!localResults.extras) localResults.extras = {};
+    if (!localResults.campeon)    localResults.campeon    = null;
+    if (!localResults.subcampeon) localResults.subcampeon = null;
+    if (!localResults.goleador)   localResults.goleador   = null;
+    if (!localResults.balonDeOro) localResults.balonDeOro = null;
+  }
+
+  function showSavedChip() {
+    const chip = document.getElementById('res-saved-chip');
+    if (!chip) return;
+    chip.style.display = 'inline-flex';
+    chip.style.opacity = '1';
+    clearTimeout(chip._timer);
+    chip._timer = setTimeout(() => {
+      chip.style.opacity = '0';
+      setTimeout(() => { chip.style.display = 'none'; }, 400);
+    }, 2000);
+  }
+
+  // ─── Helpers ──────────────────────────────────────────────
+  function getAllTeams() {
+    const teams = [];
+    Object.values(WC2026.groups).forEach(g => g.teams.forEach(t => teams.push(t)));
+    return teams.sort((a, b) => a.localeCompare(b));
   }
 
   // ─── Toast ────────────────────────────────────────────────
@@ -579,7 +1253,9 @@ const AdminApp = (function () {
 
   // ─── Init ─────────────────────────────────────────────────
   function init() {
+    loadLocalResults();
     initLogin();
+    initTabs();
     initUpload();
   }
 

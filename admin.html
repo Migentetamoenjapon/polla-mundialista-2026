@@ -65,61 +65,89 @@
     <!-- PANEL ADMIN (oculto hasta login) -->
     <div id="admin-panel">
 
-      <!-- Upload -->
-      <section class="form-section">
-        <div class="section-header">
-          <span class="section-icon"><i class="fa-solid fa-folder-open"></i></span>
-          <div class="section-header-text">
-            <h2>Cargar Predicciones</h2>
-            <div class="section-sub">Sube los archivos JSON de todos los participantes</div>
-          </div>
-        </div>
-        <div class="section-body">
-          <div id="upload-zone" class="upload-zone">
-            <div class="upload-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
-            <p><strong>Haz clic o arrastra archivos JSON aquí</strong></p>
-            <p>Puedes cargar varios archivos a la vez</p>
-          </div>
-          <input type="file" id="file-input" multiple accept=".json">
+      <!-- Tab Bar -->
+      <div class="admin-tabs-bar">
+        <button class="admin-tab-btn active" data-tab="ranking">
+          <i class="fa-solid fa-trophy"></i> Ranking
+        </button>
+        <button class="admin-tab-btn" data-tab="selecciones">
+          <i class="fa-solid fa-users"></i> Selecciones
+        </button>
+        <button class="admin-tab-btn" data-tab="resultados">
+          <i class="fa-solid fa-pen-to-square"></i> Resultados
+        </button>
+      </div>
 
-          <div class="stats-bar">
-            <div class="stat-chip">
-              Participantes: <strong id="stat-count">0</strong>
-            </div>
-            <div class="stat-chip warning" id="no-results-banner" style="display:none;align-items:center;gap:6px">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-              <span>Resultados reales no ingresados — puntuación en ceros</span>
-            </div>
-            <div style="margin-left:auto">
-              <button id="btn-clear" class="btn-clear">
-                <i class="fa-solid fa-trash-can"></i> Limpiar todo
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <!-- TAB: Ranking -->
+      <div id="tab-ranking" class="admin-tab-content active">
 
-      <!-- Tabla ranking -->
-      <section class="form-section">
-        <div class="section-header">
-          <span class="section-icon"><i class="fa-solid fa-trophy"></i></span>
-          <div class="section-header-text">
-            <h2>Ranking</h2>
-            <div class="section-sub">Haz clic en una fila para ver el detalle completo</div>
+        <!-- Upload -->
+        <section class="form-section">
+          <div class="section-header">
+            <span class="section-icon"><i class="fa-solid fa-folder-open"></i></span>
+            <div class="section-header-text">
+              <h2>Cargar Predicciones</h2>
+              <div class="section-sub">Sube los archivos JSON de todos los participantes</div>
+            </div>
           </div>
-        </div>
-        <div class="section-body" style="padding:0">
-          <div class="ranking-table-wrap">
-            <div id="table-container">
-              <div class="empty-state">
-                <div class="empty-icon"><i class="fa-solid fa-users"></i></div>
-                <p>Ningún archivo cargado todavía.</p>
-                <p>Sube los JSON de tus compañeros para ver el ranking.</p>
+          <div class="section-body">
+            <div id="upload-zone" class="upload-zone">
+              <div class="upload-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+              <p><strong>Haz clic o arrastra archivos JSON aquí</strong></p>
+              <p>Puedes cargar varios archivos a la vez</p>
+            </div>
+            <input type="file" id="file-input" multiple accept=".json">
+
+            <div class="stats-bar">
+              <div class="stat-chip">
+                Participantes: <strong id="stat-count">0</strong>
+              </div>
+              <div class="stat-chip warning" id="no-results-banner" style="display:none;align-items:center;gap:6px">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Resultados reales no ingresados — puntuación en ceros</span>
+              </div>
+              <div style="margin-left:auto">
+                <button id="btn-clear" class="btn-clear">
+                  <i class="fa-solid fa-trash-can"></i> Limpiar todo
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <!-- Tabla ranking -->
+        <section class="form-section">
+          <div class="section-header">
+            <span class="section-icon"><i class="fa-solid fa-trophy"></i></span>
+            <div class="section-header-text">
+              <h2>Ranking</h2>
+              <div class="section-sub">Haz clic en una fila para ver el detalle completo</div>
+            </div>
+          </div>
+          <div class="section-body" style="padding:0">
+            <div class="ranking-table-wrap">
+              <div id="table-container">
+                <div class="empty-state">
+                  <div class="empty-icon"><i class="fa-solid fa-users"></i></div>
+                  <p>Ningún archivo cargado todavía.</p>
+                  <p>Sube los JSON de tus compañeros para ver el ranking.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /#tab-ranking -->
+
+      <!-- TAB: Selecciones -->
+      <div id="tab-selecciones" class="admin-tab-content">
+        <div id="selecciones-container"></div>
+      </div>
+
+      <!-- TAB: Resultados -->
+      <div id="tab-resultados" class="admin-tab-content">
+        <div id="resultados-container"></div>
+      </div>
 
     </div><!-- /#admin-panel -->
 

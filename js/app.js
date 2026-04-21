@@ -481,7 +481,12 @@ const App = (function () {
           <div class="pred-card">
             <div class="pred-card-icon"><i class="fa-solid fa-globe-americas" style="color:var(--green)"></i></div>
             <div class="pred-card-title">¿CONCACAF en octavos?</div>
-            <div class="pred-card-sub">¿Algún equipo de la región llega a 16?</div>
+            <div class="pred-card-sub">
+              <span class="fi fi-mx" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.15);margin-right:3px;vertical-align:middle"></span>México
+              <span class="fi fi-ca" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.15);margin:0 3px 0 6px;vertical-align:middle"></span>Canadá
+              <span class="fi fi-us" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.15);margin:0 3px 0 6px;vertical-align:middle"></span>EE. UU.
+              <span class="fi fi-pa" style="border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.15);margin:0 3px 0 6px;vertical-align:middle"></span>Panamá
+            </div>
             <div class="pred-pts-tag">3 pts</div>
             ${toggleHtml('concacafOctavos', [
               { val: 'si', label: 'Sí' },

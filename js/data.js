@@ -104,12 +104,13 @@ const WC2026 = {
   // ============================================================
   specialMatches: [
     { key: "mexico_sudafrica",   team1: "México",    team2: "Sudáfrica",  badge: "⚽ Partido Inaugural" },
-    { key: "croacia_inglaterra", team1: "Croacia",   team2: "Inglaterra"  },
-    { key: "colombia_portugal",  team1: "Colombia",  team2: "Portugal"    },
     { key: "brasil_marruecos",   team1: "Brasil",    team2: "Marruecos"   },
+    { key: "alemania_ecuador",   team1: "Alemania",  team2: "Ecuador"     },
     { key: "espana_uruguay",     team1: "España",    team2: "Uruguay"     },
-    { key: "argentina_austria",  team1: "Argentina", team2: "Austria"     },
-    { key: "alemania_curazao",   team1: "Alemania",  team2: "Curazao"     },
+    { key: "francia_noruega",    team1: "Francia",   team2: "Noruega"     },
+    { key: "argentina_jordania", team1: "Argentina", team2: "Jordania"    },
+    { key: "colombia_portugal",  team1: "Colombia",  team2: "Portugal"    },
+    { key: "croacia_inglaterra", team1: "Croacia",   team2: "Inglaterra"  },
   ],
 
   // ============================================================
@@ -273,12 +274,13 @@ const WC2026 = {
     },
     specials: {
       mexico_sudafrica:   { golesTeam1: 1, golesTeam2: 0 },
-      croacia_inglaterra: { golesTeam1: 1, golesTeam2: 2 },
-      colombia_portugal:  { golesTeam1: 0, golesTeam2: 2 },
       brasil_marruecos:   { golesTeam1: 3, golesTeam2: 0 },
+      alemania_ecuador:   { golesTeam1: 2, golesTeam2: 0 },
       espana_uruguay:     { golesTeam1: 2, golesTeam2: 1 },
-      argentina_austria:  { golesTeam1: 3, golesTeam2: 0 },
-      alemania_curazao:   { golesTeam1: 4, golesTeam2: 0 },
+      francia_noruega:    { golesTeam1: 2, golesTeam2: 1 },
+      argentina_jordania: { golesTeam1: 3, golesTeam2: 0 },
+      colombia_portugal:  { golesTeam1: 0, golesTeam2: 2 },
+      croacia_inglaterra: { golesTeam1: 1, golesTeam2: 2 },
     },
     extras: {
       primerGoleadorPanama: "Fajardo",
@@ -287,6 +289,9 @@ const WC2026 = {
       golesEnFinal:         3,
       penalesEnFinal:       "no",   // "si" | "no"
       masGolesCR7Messi:     "messi", // "cr7" | "messi" | "igual"
+      equipoMasGoles:       "Francia",
+      equipoMasGoleado:     "Arabia Saudí",
+      mayorGoleada:         5,      // diferencia de goles del partido más abultado
     },
   }
   */

@@ -1,6 +1,7 @@
 /* ============================================================
    Polla Mundialista 2026 — Apple / iOS Design
    ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
 :root {
   /* iOS Colors */
@@ -67,84 +68,98 @@ body {
 }
 
 /* ============================================================
-   HEADER — iOS Navigation Bar
+   HEADER — Clean iOS Nav Bar
    ============================================================ */
 header {
-  background: rgba(28,28,30,0.92);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  color: #fff;
+  background: var(--surface);
+  color: var(--label);
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  border-bottom: 0.5px solid var(--sep);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
 }
+
 .header-inner {
   max-width: 960px;
   margin: 0 auto;
-  padding: 11px 20px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
-.header-brand { display: flex; align-items: center; gap: 10px; }
+
+.header-brand { display: flex; align-items: center; gap: 11px; }
+
 .header-trophy {
-  font-size: 1.5rem;
   line-height: 1;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+  flex-shrink: 0;
 }
+
+.header-trophy i[class*="fa-"] {
+  color: var(--orange);
+  font-size: 1.45rem;
+  display: block;
+}
+
 .header-text h1 {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.2;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--label);
 }
+
+.h1-year {
+  color: var(--blue);
+  font-size: 1.2rem;
+  letter-spacing: 0.05em;
+}
+
 .tagline {
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-top: 3px;
+  margin-top: 4px;
+  font-size: 0;
   opacity: 0.45;
-  font-size: 0;  /* hide text-node gaps */
 }
+
 .tagline .fi {
   font-size: 0.85rem;
   border-radius: 2px;
-  box-shadow: 0 0 0 0.5px rgba(255,255,255,0.2);
 }
+
 .tagline-sep,
 .tagline span:not(.fi) {
-  font-size: 0.69rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--label-3);
 }
 
-/* Header trophy icon */
-.header-trophy i[class*="fa-"] {
-  color: #ffd60a;
-  font-size: 1.4rem;
-  filter: drop-shadow(0 0 6px rgba(255,214,10,0.35));
-}
-
-/* Nav — iOS pill tabs */
-nav { display: flex; gap: 3px; }
+/* ── Nav ─────────────────────────────────────────────────── */
+nav { display: flex; gap: 2px; }
 nav a {
-  color: rgba(255,255,255,0.45);
+  color: var(--label-3);
   text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
   padding: 6px 13px;
   border-radius: 8px;
-  transition: background 0.18s, color 0.18s;
-  letter-spacing: -0.01em;
+  transition: background 0.2s, color 0.2s;
+  letter-spacing: 0.01em;
 }
-nav a:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.8); }
-/* Active: white pill with dark text (Jakob's Law — familiar iOS tab pattern) */
+nav a:hover {
+  background: var(--fill-2);
+  color: var(--label);
+}
 nav a.active {
-  background: rgba(255,255,255,0.92);
-  color: rgba(28,28,30,0.88);
+  background: rgba(0,122,255,0.10);
+  color: var(--blue);
   font-weight: 700;
 }
 
@@ -1175,7 +1190,7 @@ table.pts-table tr:nth-child(even) td { background: var(--fill-3); }
 .fi.fi-lg { font-size: 1.35rem !important; }
 .fi.fi-xl { font-size: 2.5rem !important; }
 .manual-section .fi { font-size: 1rem !important; vertical-align: middle; }
-.tagline .fi { font-size: 0.85rem !important; }
+.tagline .fi { font-size: 0.88rem !important; }
 
 /* ============================================================
    CLAN WARS — Satisfying Interactions
@@ -1246,9 +1261,10 @@ table.pts-table tr:nth-child(even) td { background: var(--fill-3); }
    RESPONSIVE
    ============================================================ */
 @media (max-width: 640px) {
-  .header-trophy { font-size: 1.3rem; }
-  .header-text h1 { font-size: 0.9rem; }
-  nav a { font-size: 0.73rem; padding: 5px 9px; }
+  .header-trophy i[class*="fa-"] { font-size: 1.2rem; }
+  .header-text h1 { font-size: 1.2rem; }
+  .h1-year { font-size: 1rem; }
+  nav a { font-size: 0.72rem; padding: 5px 10px; }
   .groups-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
   .panama-matches { grid-template-columns: 1fr; }
   .pred-grid-4, .pred-grid-3 { grid-template-columns: 1fr 1fr; }

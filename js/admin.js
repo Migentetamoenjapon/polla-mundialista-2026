@@ -236,6 +236,9 @@ const AdminApp = (function () {
       if (cmpNum(ex.golesEnFinal,         rex.golesEnFinal))         breakdown.extras += s.extra;
       if (cmpStr(ex.penalesEnFinal,       rex.penalesEnFinal))       breakdown.extras += s.extra;
       if (cmpStr(ex.masGolesCR7Messi,     rex.masGolesCR7Messi))     breakdown.extras += s.extra;
+      if (cmpStr(ex.equipoMasGoles,       rex.equipoMasGoles))       breakdown.extras += s.extra;
+      if (cmpStr(ex.equipoMasGoleado,     rex.equipoMasGoleado))     breakdown.extras += s.extra;
+      if (cmpNum(ex.mayorGoleada,         rex.mayorGoleada))         breakdown.extras += s.extra;
     }
 
     const total = Object.values(breakdown).reduce((a, b) => a + b, 0);
@@ -483,6 +486,9 @@ const AdminApp = (function () {
       { label: 'Goles en Final',  val: ex.golesEnFinal,         real: rex.golesEnFinal,         type: 'num'  },
       { label: 'Penales Final',   val: ex.penalesEnFinal,       real: rex.penalesEnFinal,       type: 'str'  },
       { label: 'CR7 vs Messi',    val: ex.masGolesCR7Messi,     real: rex.masGolesCR7Messi,     type: 'str'  },
+      { label: 'Más goles',       val: ex.equipoMasGoles,       real: rex.equipoMasGoles,       type: 'str'  },
+      { label: 'Más goleado',     val: ex.equipoMasGoleado,     real: rex.equipoMasGoleado,     type: 'str'  },
+      { label: 'Mayor goleada',   val: ex.mayorGoleada,         real: rex.mayorGoleada,         type: 'num'  },
     ];
     let extHtml = `<div class="expand-group"><h4><i class="fa-solid fa-bolt"></i> Extras</h4>`;
     extrasRows.forEach(row => {

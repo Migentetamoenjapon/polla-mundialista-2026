@@ -10,12 +10,13 @@ const App = (function () {
 
   // Total de campos requeridos para 100%:
   // nombre(1) + grupos(12×2=24) + terceros_completo(1)
-  // + panama(6: 3×2) + specials(14: 7×2)
+  // + panama(6: 3×2) + specials(16: 8×2)
   // + campeon(1) + subcampeon(1) + goleador(1) + balonDeOro(1)
-  // + extras(6): primerGoleadorPanama, golesYamal, golesVinicius,
-  //              golesEnFinal, penalesEnFinal, masGolesCR7Messi
-  // = 56
-  const TOTAL_FIELDS = 56;
+  // + extras(9): primerGoleadorPanama, golesYamal, golesVinicius,
+  //              golesEnFinal, penalesEnFinal, masGolesCR7Messi,
+  //              equipoMasGoles, equipoMasGoleado, mayorGoleada
+  // = 61
+  const TOTAL_FIELDS = 61;
 
   // ─── Estado ──────────────────────────────────────────────
   let state = {
@@ -35,6 +36,9 @@ const App = (function () {
         golesEnFinal:    null,
         penalesEnFinal:  '',    // 'si' | 'no'
         masGolesCR7Messi: '',   // 'cr7' | 'messi' | 'igual'
+        equipoMasGoles:   '',
+        equipoMasGoleado: '',
+        mayorGoleada:    null,
       },
       panama: {
         vsInglaterra: { golesPanama: '', golesRival: '' },
@@ -43,12 +47,13 @@ const App = (function () {
       },
       specials: {
         mexico_sudafrica:   { golesTeam1: '', golesTeam2: '' },
-        croacia_inglaterra: { golesTeam1: '', golesTeam2: '' },
-        colombia_portugal:  { golesTeam1: '', golesTeam2: '' },
         brasil_marruecos:   { golesTeam1: '', golesTeam2: '' },
+        alemania_ecuador:   { golesTeam1: '', golesTeam2: '' },
         espana_uruguay:     { golesTeam1: '', golesTeam2: '' },
-        argentina_austria:  { golesTeam1: '', golesTeam2: '' },
-        alemania_curazao:   { golesTeam1: '', golesTeam2: '' },
+        francia_noruega:    { golesTeam1: '', golesTeam2: '' },
+        argentina_jordania: { golesTeam1: '', golesTeam2: '' },
+        colombia_portugal:  { golesTeam1: '', golesTeam2: '' },
+        croacia_inglaterra: { golesTeam1: '', golesTeam2: '' },
       }
     }
   };
@@ -438,6 +443,27 @@ const App = (function () {
             ], pred.extras.masGolesCR7Messi)}
           </div>
 
+          <div class="pred-card">
+            <div class="pred-card-icon"><i class="fa-solid fa-ranking-star" style="color:var(--yellow)"></i></div>
+            <div class="pred-card-title">Equipo con Más Goles</div>
+            <div class="pred-card-sub">¿Quién mete más goles en todo el torneo?</div>
+            <div class="pred-pts-tag">3 pts</div>
+            <select id="select-equipo-mas-goles" class="special-select">${teamOptions(pred.extras.equipoMasGoles)}</select>
+          </div>
+
+          <div class="pred-card">
+            <div class="pred-card-icon"><i class="fa-solid fa-shield-halved" style="color:#ef4444"></i></div>
+            <div class="pred-card-title">Equipo Más Goleado</div>
+            <div class="pred-card-sub">¿Quién recibe más goles en contra?</div>
+            <div class="pred-pts-tag">3 pts</div>
+            <select id="select-equipo-mas-goleado" class="special-select">${teamOptions(pred.extras.equipoMasGoleado)}</select>
+          </div>
+
+          ${stepperHtml('mayorGoleada', pred.extras.mayorGoleada,
+            'Mayor Goleada del Torneo',
+            'Diferencia de goles del partido más abultado',
+            '<i class="fa-solid fa-fire-flame-curved" style="color:#f97316"></i>', 1, 20)}
+
         </div>
       </div>
     `;
@@ -466,7 +492,9 @@ const App = (function () {
         pred.extras.golesYamal !== null && pred.extras.golesYamal !== '' &&
         pred.extras.golesVinicius !== null && pred.extras.golesVinicius !== '' &&
         pred.extras.golesEnFinal !== null && pred.extras.golesEnFinal !== '' &&
-        pred.extras.penalesEnFinal && pred.extras.masGolesCR7Messi),
+        pred.extras.penalesEnFinal && pred.extras.masGolesCR7Messi &&
+        pred.extras.equipoMasGoles && pred.extras.equipoMasGoleado &&
+        pred.extras.mayorGoleada !== null && pred.extras.mayorGoleada !== ''),
     };
 
     Object.entries(done).forEach(([id, isDone]) => {
@@ -510,7 +538,7 @@ const App = (function () {
     if (pred.subcampeon) count++;
     if (pred.balonDeOro?.trim()) count++;
 
-    // Extras = 6
+    // Extras = 9
     const ex = pred.extras;
     if (ex.primerGoleadorPanama) count++;
     if (ex.golesYamal !== null && ex.golesYamal !== '') count++;
@@ -518,6 +546,9 @@ const App = (function () {
     if (ex.golesEnFinal !== null && ex.golesEnFinal !== '') count++;
     if (ex.penalesEnFinal) count++;
     if (ex.masGolesCR7Messi) count++;
+    if (ex.equipoMasGoles) count++;
+    if (ex.equipoMasGoleado) count++;
+    if (ex.mayorGoleada !== null && ex.mayorGoleada !== '') count++;
 
     return count;
   }
@@ -847,6 +878,14 @@ const App = (function () {
     }
     if (target.id === 'select-balon-de-oro') {
       state.predicciones.balonDeOro = target.value;
+      debounceSave(); updateProgress(); return;
+    }
+    if (target.id === 'select-equipo-mas-goles') {
+      state.predicciones.extras.equipoMasGoles = target.value;
+      debounceSave(); updateProgress(); return;
+    }
+    if (target.id === 'select-equipo-mas-goleado') {
+      state.predicciones.extras.equipoMasGoleado = target.value;
       debounceSave(); updateProgress(); return;
     }
   }
